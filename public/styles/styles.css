@@ -1,5 +1,5 @@
 :root {
-    --primary-color: coral;
+    --primary-color: #FFB46F;
     --sec-color: aliceblue;
     --bg-color: white;
 }
@@ -7,16 +7,21 @@
     box-sizing: border-box;
     font-family: sans-serif;
 }
-body {
+.topics {
     background-color: var(--primary-color);
     margin: 0;
 }
-header {
+.bar {
+    height: 20vh;
     text-align: center;
     color: white;
 }
+h1 {
+  margin: 0;
+  padding: 1.66em;
+}
 main {
-    height: 90vh;
+    min-height: 80vh;
     background-color: var(--bg-color);
     padding: 50px;
     border-top-left-radius: 50px;
@@ -27,16 +32,61 @@ main {
     border-radius: 999px;
     background-color: var(--primary-color);
     color: white;
-    display: inline-block;
+    margin: 10px;
 }
 ul {
-    display: inline-block;
+    display: inline;
     padding: 0;
+    margin: 0;
+    text-align: center;
 }
 li {
     list-style: none;
     padding: 20px 50px 20px 50px;
+    margin: 10px;
     background-color: var(--sec-color);
     display: inline-block;
-    border-radius: 999px 
+    border-radius: 999px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}
+.toolbar {
+  position: relative;
+  margin: 10px 40px;
+}
+.topic-heading {
+  position: absolute;
+  margin-top:10px;
+}
+.post-button {
+  border: 10px solid var(--primary-color);
+  border-radius: 999px;
+  background-color: var(--primary-color);
+  color: white;
+  position: absolute;
+  right: 0;
+}
+.posts li {
+  display: block;
+}
+h2 {
+  margin: 0;
+  padding: 0;
+}
+header li {
+  width: calc(33% - 20px);
+  white-space: nowrap;
+}
+header ul {
+  display: block;
+}
+textarea {
+  resize:none;
+  outline: none;
+  width: 100%;
+  border: 2px solid var(--primary-color);
+  border-radius: 999px;
+  padding: 40px;
 }
