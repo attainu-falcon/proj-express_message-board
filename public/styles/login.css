@@ -12,11 +12,14 @@ body {
     height: 100vh;
     
 }
-input {
+input , input:focus{
     border: none;
     background-color: transparent;
     border-bottom: 4px solid white;
     padding: 20px;
+    caret-color: white;
+    outline: none;
+    color: white;
 }
 button[type=submit] {
     color: var(--primary-color);

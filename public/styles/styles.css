@@ -2,12 +2,14 @@
     --primary-color: #FFB46F;
     --sec-color: aliceblue;
     --bg-color: white;
-}
-* {
+  }
+  * {
     box-sizing: border-box;
     font-family: sans-serif;
-}
-.topics {
+    font-size: 20px;
+    text-align: center;
+  }
+  .topics {
     background-color: var(--primary-color);
     margin: 0;
 }
@@ -16,15 +18,17 @@
     text-align: center;
     color: white;
 }
-h1 {
+.toolbar-heading {
   margin: 0;
   padding: 1.66em;
+  font-size: 1.5em;
 }
-main {
-    min-height: 80vh;
-    background-color: var(--bg-color);
-    padding: 50px;
-    border-top-left-radius: 50px;
+.topics-container {
+  min-height: 80vh;
+  background-color: var(--bg-color);
+  padding: 50px;
+  border-top-left-radius: 50px;
+  box-shadow: 0px 0px 20px 10px rgb(255, 161, 72);
 }
 .active-button {
     padding: 20px 50px 20px 50px;
@@ -34,13 +38,11 @@ main {
     color: white;
     margin: 10px;
 }
-ul {
-    display: inline;
+.category-container ul {
     padding: 0;
     margin: 0;
-    text-align: center;
 }
-li {
+.topics-container li {
     list-style: none;
     padding: 20px 50px 20px 50px;
     margin: 10px;
@@ -49,8 +51,8 @@ li {
     border-radius: 999px;
 }
 a {
-    text-decoration: none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 .toolbar {
   position: relative;
@@ -59,6 +61,7 @@ a {
 .topic-heading {
   position: absolute;
   margin-top:10px;
+  left: 10%;
 }
 .post-button {
   border: 10px solid var(--primary-color);
@@ -66,27 +69,102 @@ a {
   background-color: var(--primary-color);
   color: white;
   position: absolute;
-  right: 0;
+  right: 10%;
 }
-.posts li {
-  display: block;
+.send-button {
+  border: 10px solid var(--primary-color);
+  border-radius: 999px;
+  background-color: var(--primary-color);
+  color: white;
 }
+
 h2 {
   margin: 0;
   padding: 0;
 }
-header li {
-  width: calc(33% - 20px);
+.category-container li {
   white-space: nowrap;
+  display: inline-block;
+  list-style: none;
+  padding: 25px;
+  margin: 10px;
+  background-color: var(--sec-color);
+  border-radius: 999px;
 }
-header ul {
-  display: block;
+
+.posts-container li {
+  white-space: nowrap;
+  list-style: none;
+  padding: 20px 50px 20px 50px;
+  margin: 10px;
+  background-color: var(--sec-color);
+  border-radius: 999px;
 }
-textarea {
+
+.posts-container {
+  margin-top: 80px;
+}
+.posts-container ul {
+  padding: 0;
+}
+.post-box {
   resize:none;
   outline: none;
-  width: 100%;
+  width: 80%;
   border: 2px solid var(--primary-color);
   border-radius: 999px;
   padding: 40px;
+  margin: 0 auto;
+  display: block;
+}
+
+.comments-list {
+  display: block;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+}
+
+.comment-box {
+  resize:none;
+  outline: none;
+  width: 80%;
+  border: 2px solid var(--primary-color);
+  border-radius: 999px;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.comments-container {
+  padding: 50px;
+  width: 100%;
+  margin-top: 40px;
+}
+.logout-button {
+    padding: 20px;
+    color: var(--primary-color);
+    background-color: white;
+    border-radius: 999px;
+    border: none;
+    position: absolute;
+    top: 30px;
+    right: 20px;
+}
+.insert-topic, .insert-topic:focus {
+  padding: 40px;
+  border: none;
+  border-bottom: 4px solid var(--primary-color);
+  width: 100%;
+  text-align: center;
+  outline: none;
+  margin: 40px 0;
+}
+.back {
+  border: none;
+  padding: 15px 60px;
+  margin: 10px;
+  margin-bottom: 40px;
+  background-color: var(--primary-color);
+  border-radius: 999px;
+  color: white;
 }
