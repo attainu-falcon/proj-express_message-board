@@ -14,7 +14,7 @@
     margin: 0;
 }
 .bar {
-    height: 20vh;
+    height: 150px;
     text-align: center;
     color: white;
 }
@@ -24,7 +24,7 @@
   font-size: 1.5em;
 }
 .topics-container {
-  min-height: 80vh;
+  min-height: calc(100vh - 150px);
   background-color: var(--bg-color);
   padding: 50px;
   border-top-left-radius: 50px;
