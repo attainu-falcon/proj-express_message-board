@@ -60,11 +60,11 @@ a {
 }
 .toolbar {
   position: relative;
-  margin: 10px 40px;
+  margin: 0px 40px;
 }
 .topic-heading {
   position: absolute;
-  margin-top:10px;
+  margin-top:20px;
   left: 10%;
 }
 .post-button {
