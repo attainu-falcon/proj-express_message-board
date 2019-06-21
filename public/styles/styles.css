@@ -86,6 +86,7 @@ h2 {
   color: var(--primary-color);
 }
 .category-container li {
+  min-width: calc(33% - 20px);
   white-space: nowrap;
   display: inline-block;
   list-style: none;
