@@ -31,7 +31,7 @@ app.use(session({
 app.post('/create', function (req, res) {
     db.collection('Users').insertOne(req.body, function (err, result) {
         if (err) throw err;
-        res.json("Inserted")
+        res.send(`<script>alert('Account created!');window.location='/login'</script>`);
     });
 });
 
@@ -65,9 +65,12 @@ app.get('/signup', function (req, res) {
 });
 
 app.get('/login', function (req, res) {
-    res.sendFile('login.html', {
-        root: __dirname + '/views'
-    });
+    if (!req.session.loggedIn)
+        res.sendFile('login.html', {
+            root: __dirname + '/views'
+        });
+    else
+        res.redirect("/topics")
 });
 
 app.get('/topics', function (req, res) {
