@@ -42,6 +42,9 @@
     padding: 0;
     margin: 0;
 }
+.topics-container ul {
+    padding: 0;    
+}
 .topics-container li {
     list-style: none;
     padding: 20px 50px 20px 50px;
@@ -80,7 +83,7 @@ a {
 
 h2 {
   margin: 0;
-  padding: 0;
+  color: var(--primary-color);
 }
 .category-container li {
   white-space: nowrap;
