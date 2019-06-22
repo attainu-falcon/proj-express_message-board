@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,27 @@
     <link rel="stylesheet" href="/styles/styles.css">
     <title>Post</title>
 </head>
+
 <body>
-    <header>
-      <h2>></h2>
-        <textarea placeholder="post!"></textarea>
+    <header class="post-container">
+        <form action="/leaderboard"><button class="back">></button></form>
+        <textarea class="post-box" placeholder="post!"></textarea>
         <div class="toolbar">
-        <h2 class="topic-heading">rating</h2>
-        <button class="post-button">Edit</button>
+            <h2 class="topic-heading">★ 1</h2>
+            <button class="post-button">Edit</button>
         </div>
     </header>
-    <main>
-        <ul class="posts">
-            <li><a href="post.html">Username - Comment.</a></li>
-            <li><a href="post.html">Username - Comment.</a></li>
-            <li><a href="post.html">Username - Comment.</a></li>
+    <main class="comments-container">
+        <div class="insert-comment-box" contenteditable="true" data-placeholder="Enter comment."></div><!--
+     --><button class="send-button">Send</button>
+        <ul class="comments-list">
+            <li>
+                <div class="comment-box">your comments.</div>
+                <div class="comment-box">your comments.</div>
+                <div class="comment-box">your comments.</div>
+            </li>
         </ul>
     </main>
 </body>
+
 </html>
