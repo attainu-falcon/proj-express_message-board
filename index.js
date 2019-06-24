@@ -4,25 +4,18 @@ const session = require('express-session');
 const app = express();
 var mongoClient = require('mongodb').MongoClient;
 var db;
-mongoClient.connect('mongodb://127.0.0.1:27017', function (err, client) {
+var url;
+if (process.env.DB_URL) {
+    url = process.env.DB_URL
+} else {
+    url = 'mongodb://127.0.0.1:27017'
+}
+mongoClient.connect(url, function (err, client) {
 
     if (err) throw err;
     db = client.db("MessageBoard");
 });
 
-// const users = [{
-//         username: "yash",
-//         password: "gurgaon"
-//     },
-//     {
-//         username: "ishan",
-//         password: "delhi"
-//     },
-//     {
-//         username: "aditya",
-//         password: "pune"
-//     }
-// ]
 app.use(express.static('public'))
 app.use(express.urlencoded())
 app.use(session({
@@ -94,6 +87,6 @@ app.get('/post', function (req, res) {
 app.get('/*', function (req, res) {
     res.send('404 page Not Found');
 });
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+app.listen(process.env.PORT || 3000, function () {
+    console.log('app listening on port 3000!');
 });
