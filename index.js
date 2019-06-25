@@ -1,8 +1,10 @@
 const express = require('express');
 const session = require('express-session');
+const mongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID
+
 
 const app = express();
-var mongoClient = require('mongodb').MongoClient;
 var db;
 var url;
 if (process.env.DB_URL) {
@@ -47,17 +49,7 @@ app.post('/auth', (req, res) => {
     });
 });
 
-app.post('/createpost', function (req, res) {
-    console.log(req.body)
-    db.collection('Topics').updateOne(
-        { "name" : "Jquery" },
-        { $set: { "posts.content" : req.body.post }}, 
-            function (err, result) {
-                if (err) throw err;        
-                res.send(result);
-    });
-    
-});
+
 
 app.get('/logout', function (req, res) {
     req.session.destroy();
@@ -100,6 +92,32 @@ app.get('/post', function (req, res) {
 app.get('/*', function (req, res) {
     res.send('404 page Not Found');
 });
+
+app.post('/createpost', function (req, res) {
+    console.log(req.body)
+    let post = {
+        '_id': new ObjectID(),
+        'content': req.body.post
+    }
+    db.collection('Topics').updateOne(
+        { "name" : "Jquery" },
+        { $push: { posts: post}}, 
+            function (err, result) {
+                if (err) throw err;        
+                res.send(result);
+    });
+    
+});
+  
+app.get('/getpost',function(req,res){
+    
+})
+app.put('/updatepost',function(req,res){
+    
+})
+app.delete('/deletepost',function(req,res){
+    
+})
     
 app.listen(process.env.PORT || 3000, function () {
     console.log('app listening on port 3000!');
