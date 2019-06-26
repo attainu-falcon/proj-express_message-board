@@ -40,6 +40,22 @@
                 body: JSON.stringify({post})
             }).then(result=> console.log(result)).catch(error=> console.log(error))
         }) 
+        
+        // let urlParams = new URLSearchParams(window.location.search)
+
+        // console.log(urlParams.has('post'));
+        // let id = urlParams.get('postid')
+        fetch('/getpost' + window.location.search)
+        .then(res=>res.json()).then(result=>renderUI(result)).catch(err=> console.log(err))
+        
+        function renderUI(result) {
+            console.log(result)
+            document.querySelector('.post-box').value = result.content
+        }
+
+        if(window.location.search) {
+            document.querySelector('.post-button').innerText = 'Edit'
+        }
     </script>
 </body>
 </html>
