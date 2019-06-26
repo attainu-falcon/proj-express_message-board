@@ -44,10 +44,10 @@ x=1;
 }
 if(x==1){
            if (y=="yashpal") {
-            res.sendFile('admin.topic.html', {root: __dirname + '/views'});
+            res.redirect('/topics')
         }
          else {
-        res.sendFile('user.topic.html', {root: __dirname + '/views'});
+        res.redirect('/topics')
     }
 }
 else {
@@ -76,19 +76,19 @@ app.get('/', function (req, res) {
     //   res.redirect("/topics")
 });
 
-app.post('/topics', function (req, res) {
+app.get('/topics', function (req, res) {
     res.sendFile('topics.html', {
         root: __dirname + '/views'
     });
 });
 
-app.post('/leaderboard', function (req, res) {
+app.get('/leaderboard', function (req, res) {
     res.sendFile('leaderboard.html', {
         root: __dirname + '/views'
     });
 });
 
-app.post('/post', function (req, res) {
+app.get('/post', function (req, res) {
     res.sendFile('post.html', {
         root: __dirname + '/views'
     });
