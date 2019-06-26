@@ -148,7 +148,7 @@ app.post('/createpost', function (req, res) {
         'content': req.body.post
     }
     db.collection('Topics').updateOne({
-            "name": "Jquery"
+            _id: ObjectID(req.body.id)
         }, {
             $push: {
                 posts: post
@@ -157,6 +157,27 @@ app.post('/createpost', function (req, res) {
         function (err, result) {
             if (err) throw err;
             res.send(result);
+        })
+})
+
+app.post('/createcomment', function (req, res) {
+    console.log(req.body)
+    let cmnt = {
+        '_id': new ObjectID(),
+        'content': req.body.cmnt
+    }
+    db.collection('Topics').updateOne({
+        _id: ObjectID(req.body.topicid)
+        }, {
+            $push: {
+                'posts.$[el].comments': cmnt
+            }
+        }, {
+            arrayFilters: [{ 'el._id': ObjectID(req.body.postid)}]
+        },
+        function (err, result) {
+            if (err) throw err
+            if(result.result.nModified) res.send(200)
         })
 })
 
@@ -175,6 +196,18 @@ app.get('/postlist', function (req, res) {
         '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
         res.send(result)
+    })
+})
+
+app.get('/commentlist', function (req, res) {
+    db.collection('Topics').findOne({
+        '_id': ObjectID(req.query.topicid)
+    }, 
+    function (err, result) {
+        console.log(result)
+        console.log(req.query.id)
+        let cmnts = result.posts.find(item => item._id == req.query.postid).comments
+        res.send(cmnts)
     })
 })
 

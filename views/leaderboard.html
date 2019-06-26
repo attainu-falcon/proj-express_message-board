@@ -39,7 +39,7 @@
                 a.textContent = post.content
                 a.setAttribute('onclick', 'postClick("' + post._id + '")') 
                 li.appendChild(a)
-                document.querySelector('.posts-container ul').appendChild(li)
+                document.querySelector('.posts-container ul').prepend(li)
             }
         }   
         
@@ -49,7 +49,7 @@
         }
         
         document.querySelector('.post-button').addEventListener('click', function(){
-            window.location.replace('post')
+            window.location.replace('post' + window.location.search)
         })
 
         function back() {

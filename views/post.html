@@ -23,26 +23,72 @@
         <!--
      --><button class="send-button">Send</button>
         <ul class="comments-list">
-            <li>
-                <div class="comment-box">your comments.</div>
-                <div class="comment-box">your comments.</div>
-                <div class="comment-box">your comments.</div>
-            </li>
+            <!-- <li><div class="comment-box">your comments.</div></li> -->
         </ul>
     </main>
     <script>
         document.querySelector('.post-button').addEventListener('click', function () {
             var post = document.querySelector('.post-box').value;
+            var cmnt = document.querySelector('.insert-comment-box').innerText;
+            let urlParams = new URLSearchParams(window.location.search)
+            let id = urlParams.get('topicid')
             fetch('/createpost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    post
+                    post,
+                    id
                 })
             }).then(result => console.log(result)).catch(error => console.log(error))
         })
+
+        document.querySelector('.send-button').addEventListener('click', function () {
+            var cmnt = document.querySelector('.insert-comment-box').innerText;
+            let urlParams = new URLSearchParams(window.location.search)
+            let topicid = urlParams.get('topicid')
+            let postid = urlParams.get('postid')
+            fetch('/createcomment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cmnt,
+                    topicid,
+                    postid
+                })
+            })
+            // .then(res=>res.text())
+            .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
+        })
+
+        function renderCommentsCheck(status) {
+            let urlParams = new URLSearchParams(window.location.search)
+            if(status==200 && urlParams.has('postid')) {
+                let topicid = urlParams.get('topicid')
+                let postid = urlParams.get('postid')
+                fetch('/commentlist?topicid='+ topicid + '&postid=' + postid)
+                .then(res=>res.json())
+                .then(result=>renderComments(result))
+                .catch(err=>console.log(err))
+                function renderComments(result) {
+                    document.querySelector('.comments-list').innerHTML = ''
+                    for (const cmnt of result) {
+                        let li = document.createElement('li')
+                        let div = document.createElement('div')
+                        div.className = 'comment-box'
+                        div.setAttribute('data-id', cmnt._id)
+                        div.innerText = cmnt.content
+                        li.appendChild(div)
+                        document.querySelector('.comments-list').prepend(li)
+                    }
+                }
+            }            
+        }
+
+        renderCommentsCheck(200)
 
         function back() {
             let urlParams = new URLSearchParams(window.location.search)
@@ -50,16 +96,22 @@
             let id = urlParams.get('topicid')
             window.location.replace('/leaderboard?topicid=' + id)
         }
-        fetch('/getpost' + window.location.search)
-            .then(res => res.json()).then(result => renderUI(result)).catch(err => console.log(err))
 
-        function renderUI(result) {
+        fetch('/getpost' + window.location.search)
+            .then(res => res.json()).then(result => renderPost(result)).catch(err => console.log(err))
+
+        function renderPost(result) {
             console.log(result)
             document.querySelector('.post-box').value = result.content
         }
 
-        if (window.location.search) {
+        let urlParams = new URLSearchParams(window.location.search)
+        if(!urlParams.has('postid')) {
+            document.querySelector('.insert-comment-box').style.display = 'none'
+            document.querySelector('.send-button').style.display = 'none'
+        } else {
             document.querySelector('.post-button').innerText = 'Edit'
+            document.querySelector('.post-box').readOnly = true
         }
     </script>
 </body>
