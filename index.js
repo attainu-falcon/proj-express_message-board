@@ -21,6 +21,7 @@ mongoClient.connect(url, function (err, client) {
 app.use(express.static('public'))
 app.use(express.urlencoded())
 app.use(express.json())
+app.use(express.text())
 app.use(session({
     secret: "message board app"
 }))
@@ -89,9 +90,6 @@ app.get('/post', function (req, res) {
     });
 });
 
-app.get('/*', function (req, res) {
-    res.send('404 page Not Found');
-});
 
 app.post('/createpost', function (req, res) {
     console.log(req.body)
@@ -108,17 +106,33 @@ app.post('/createpost', function (req, res) {
     });
     
 });
-  
-app.get('/getpost',function(req,res){
-    
-})
+        
+app.get('/getpost', function (req,res) {
+        db.collection('Topics').findOne({'_id': ObjectID("5d1311e66b4186f06c58c178")}, function (err, result) {
+            if(err) throw err
+            let post = result.posts.find(item=>item._id==req.query.postid)
+            res.send(post)
+        })
+});
+
+app.post('/getpostlist', function (req,res) {
+        db.collection('Topics').find({'_id': ObjectID(req.body)}).toArray(function (err, result) {
+            res.send(result)
+        })
+});
+        
 app.put('/updatepost',function(req,res){
     
 })
+
 app.delete('/deletepost',function(req,res){
     
 })
-    
+        
+app.get('/*', function (req, res) {
+    res.send('404 page Not Found');
+});
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('app listening on port 3000!');
 });
