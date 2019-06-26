@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,53 @@
     <link rel="stylesheet" href="/styles/styles.css">
     <title>Post</title>
 </head>
+
 <body>
-    <header>
-      <h2>></h2>
-        <textarea placeholder="post!"></textarea>
+    <header class="post-container">
+        <form action="/leaderboard"><button class="back">></button></form>
+        <textarea class="post-box" placeholder="post!"></textarea>
         <div class="toolbar">
-        <h2 class="topic-heading">rating</h2>
-        <button class="post-button">Edit</button>
+            <h2 class="topic-heading">★ 1</h2>
+            <button class="post-button">post</button>
         </div>
     </header>
-    <main>
-        <ul class="posts">
-            <li><a href="post.html">Username - Comment.</a></li>
-            <li><a href="post.html">Username - Comment.</a></li>
-            <li><a href="post.html">Username - Comment.</a></li>
+    <main class="comments-container">
+        <div class="insert-comment-box" contenteditable="true" data-placeholder="Enter comment."></div><!--
+     --><button class="send-button">Send</button>
+        <ul class="comments-list">
+            <li>
+                <div class="comment-box">your comments.</div>
+                <div class="comment-box">your comments.</div>
+                <div class="comment-box">your comments.</div>
+            </li>
         </ul>
     </main>
+    <script>    
+        document.querySelector('.post-button').addEventListener('click', function(){
+            var post = document.querySelector('.post-box').value;
+            fetch('/createpost', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({post})
+            }).then(result=> console.log(result)).catch(error=> console.log(error))
+        }) 
+        
+        // let urlParams = new URLSearchParams(window.location.search)
+        // console.log(urlParams.has('post'));
+        // let id = urlParams.get('postid')
+        fetch('/getpost' + window.location.search)
+        .then(res=>res.json()).then(result=>renderUI(result)).catch(err=> console.log(err))
+        
+        function renderUI(result) {
+            console.log(result)
+            document.querySelector('.post-box').value = result.content
+        }
+
+        if(window.location.search) {
+            document.querySelector('.post-button').innerText = 'Edit'
+        }
+    </script>
 </body>
 </html>
