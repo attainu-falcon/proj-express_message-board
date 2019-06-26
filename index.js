@@ -13,8 +13,8 @@ if (process.env.DB_URL) {
 
 var db
 mongoClient.connect(url, function (err, client) {
-    if (err) throw err;
-    db = client.db("MessageBoard");
+    if (err) throw err
+    db = client.db("MessageBoard")
 })
 
 app.use(express.static('public'))
@@ -27,26 +27,23 @@ app.use(session({
 
 app.post('/create', function (req, res) {
     db.collection('Users').find({}).toArray(function (err, result) {
-        x = 0;
-        if (err) throw err;
+        var x = 0;
+        if (err) throw err
         for (var i = 0; i < result.length; i++) {
             if (req.body.username == result[i].username || req.body.email == result[i].email) {
                 x = 1;
             }
         }
-
         if (x == 1) {
-            res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`);
+            res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`)
         } else {
             db.collection('Users').insertOne(req.body, function (err, result) {
-                if (err) throw err;
-                res.send(`<script>alert('Account created!');window.location='/'</script>`);
+                if (err) throw err
+                res.send(`<script>alert('Account created!');window.location='/'</script>`)
             })
         }
     })
 })
-
-
 
 app.post('/auth', (req, res) => {
     db.collection('Users').find({}).toArray(function (err, result) {
@@ -54,50 +51,26 @@ app.post('/auth', (req, res) => {
         if (err) throw err;
         for (var i = 0; i < result.length; i++) {
             if (req.body.username == result[i].username && req.body.password == result[i].password) {
-                var y = result[i].username;
-                var z = result[i].password;
+                var y = result[i].username
+                var z = result[i].password
                 x = 1;
             }
         }
         if (x == 1) {
             if (y == "yashpal") {
-                res.sendFile('admin.topic.html', {
-                    root: __dirname + '/views'
-                });
+                res.redirect('/topics')
             } else {
-                res.sendFile('user.topic.html', {
-                    root: __dirname + '/views'
-                });
+                res.redirect('/topics')
             }
         } else {
             res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
         }
-    });
-});
-
-app.post('/logout', function (req, res) {
-    db.collection('Users').find(req.body).toArray(function (err, users) {
-        if (err) throw err;
-
-        for (user of users) {
-            if (req.body.username == user.username && req.body.password == user.password) {
-                req.session.loggedIn = "true";
-            }
-        }
-
-        if (req.session.loggedIn == "true") {
-            res.redirect('/topics');
-        } else
-            res.send(`<script>alert('wrong credentials!');window.location='/login'</script>`);
-    });
-});
-
-
+    })
+})
 
 app.get('/logout', function (req, res) {
-    req.session.destroy();
-    res.redirect('/');
-
+    req.session.destroy()
+    res.redirect('/')
 })
 
 app.get('/signup', function (req, res) {
@@ -107,12 +80,12 @@ app.get('/signup', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    if (!req.session.loggedIn)
+    // if (!req.session.loggedIn)
         res.sendFile('login.html', {
             root: __dirname + '/views'
-        });
-    else
-        res.redirect("/topics")
+        })
+    // else
+    //     res.redirect("/topics")
 })
 
 app.get('/topics', function (req, res) {
@@ -132,14 +105,14 @@ app.get('/post', function (req, res) {
         root: __dirname + '/views'
     })
 })
+
 app.get('/forgot', function (req, res) {
     res.sendFile('forgot.html', {
         root: __dirname + '/views'
     })
 })
+
 app.post('/authPass', (req, res) => {
-
-
     db.collection('Users').find({}).toArray(function (err, result) {
         var x = 0;
         if (err) throw err;
@@ -164,9 +137,9 @@ app.post('/authPass', (req, res) => {
         } else {
             res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
         }
-    });
+    })
 
-});
+})
 
 app.post('/createpost', function (req, res) {
     console.log(req.body)
@@ -184,9 +157,8 @@ app.post('/createpost', function (req, res) {
         function (err, result) {
             if (err) throw err;
             res.send(result);
-        });
-
-});
+        })
+})
 
 app.get('/getpost', function (req, res) {
     db.collection('Topics').findOne({
@@ -196,7 +168,7 @@ app.get('/getpost', function (req, res) {
         let post = result.posts.find(item => item._id == req.query.postid)
         res.send(post)
     })
-});
+})
 
 app.post('/getpostlist', function (req, res) {
     db.collection('Topics').find({
@@ -204,7 +176,7 @@ app.post('/getpostlist', function (req, res) {
     }).toArray(function (err, result) {
         res.send(result)
     })
-});
+})
 
 app.put('/updatepost', function (req, res) {
 
@@ -215,9 +187,9 @@ app.delete('/deletepost', function (req, res) {
 })
 
 app.get('/*', function (req, res) {
-    res.send('404 page Not Found');
-});
+    res.send('404 page Not Found')
+})
 
 app.listen(process.env.PORT || 3000, function () {
-    console.log('app listening on port 3000!');
-});
+    console.log('app listening on port 3000!')
+})
