@@ -10,7 +10,7 @@ body {
     background-color: var(--primary-color);
     color: white;
     height: 100vh;
-    
+
 }
 input , input:focus{
     border: none;
@@ -28,6 +28,10 @@ button[type=submit] {
     border-radius: 999px;
     border: none;
     outline: none;
+    position: fixed;
+    bottom: 130px;
+    left: 555px;
+
 }
 .signup {
     color: var(--primary-color);
@@ -40,11 +44,22 @@ button[type=submit] {
     top: 20px;
     right: 20px;
 }
+.forgot{
+
+position: fixed;
+top: 400px;
+left: 655px;
+font-size: 20px;
+
+
+}
 .container {
     width: 400px;
     text-align: center;
     margin: auto;
-    margin-top: 30vh;    
+    margin-top: 30vh;
+    position: fixed;
+    left: 420px;
 }
 ::placeholder {
     color: white;
