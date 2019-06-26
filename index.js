@@ -27,7 +27,7 @@ app.use(session({
 
 app.post('/create', function (req, res) {
     db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0
+        x = 0;
         if (err) throw err;
         for (var i = 0; i < result.length; i++) {
             if (req.body.username == result[i].username || req.body.email == result[i].email) {
@@ -38,15 +38,14 @@ app.post('/create', function (req, res) {
         if (x == 1) {
             res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`);
         } else {
-            app.post('/createuser', function (req, res) {
-                db.collection('Users').insertOne(req.body, function (err, result) {
-                    if (err) throw err;
-                    res.send(`<script>alert('Account created!');window.location='/'</script>`);
-                });
+            db.collection('Users').insertOne(req.body, function (err, result) {
+                if (err) throw err;
+                res.send(`<script>alert('Account created!');window.location='/'</script>`);
             })
         }
-    });
+    })
 })
+
 
 
 app.post('/auth', (req, res) => {
@@ -109,11 +108,11 @@ app.get('/signup', function (req, res) {
 
 app.get('/', function (req, res) {
     if (!req.session.loggedIn)
-    res.sendFile('login.html', {
-        root: __dirname + '/views'
-    });
-     else
-      res.redirect("/topics")
+        res.sendFile('login.html', {
+            root: __dirname + '/views'
+        });
+    else
+        res.redirect("/topics")
 })
 
 app.get('/topics', function (req, res) {
