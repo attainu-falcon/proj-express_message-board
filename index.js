@@ -162,7 +162,7 @@ app.post('/createpost', function (req, res) {
 
 app.get('/getpost', function (req, res) {
     db.collection('Topics').findOne({
-        '_id': ObjectID("5d1311e66b4186f06c58c178")
+        '_id': ObjectID(req.query.topicid)
     }, function (err, result) {
         if (err) throw err
         let post = result.posts.find(item => item._id == req.query.postid)
@@ -170,9 +170,9 @@ app.get('/getpost', function (req, res) {
     })
 })
 
-app.post('/getpostlist', function (req, res) {
+app.get('/postlist', function (req, res) {
     db.collection('Topics').find({
-        '_id': ObjectID(req.body)
+        '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
         res.send(result)
     })
