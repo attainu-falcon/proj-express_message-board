@@ -25,7 +25,7 @@ app.use(session({
     secret: "message board app"
 }))
 
-app.post('/create', function (req, res) {
+app.post('/register', function (req, res) {
     db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
         if(result != null) {
