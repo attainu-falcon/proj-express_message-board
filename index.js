@@ -190,7 +190,10 @@ app.get('/getpost', function (req, res) {
     },
     function (err, result) {
         if (err) throw err
-        res.send(result.posts[0])
+        if('posts' in result)
+            res.send(result.posts[0])
+        else
+            res.end()
     })
 })
 

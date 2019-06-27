@@ -11,7 +11,7 @@
 
 <body>
     <header class="post-container">
-        <button class="back" onclick="back()"></button>
+        <button class="back" onclick="back()"><</button>
         <textarea class="post-box" placeholder="post!"></textarea>
         <div class="toolbar">
             <h2 class="topic-heading">★ 1</h2>
@@ -85,15 +85,19 @@
                 }
             }
         }
+
         renderCommentsCheck(200)
+
         function back() {
             let urlParams = new URLSearchParams(window.location.search)
             // console.log(urlParams.has('post'))
             let id = urlParams.get('topicid')
             window.location.replace('/leaderboard?topicid=' + id)
         }
+
         fetch('/getpost' + window.location.search)
             .then(res => res.json()).then(result => renderPost(result)).catch(err => console.log(err))
+
         function renderPost(result) {
             console.log(result)
             document.querySelector('.post-box').value = result.content
