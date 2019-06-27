@@ -133,7 +133,7 @@ app.post('/authPass', (req, res) => {
             }, function (err, result) {
                 if (err) throw err;
             });
-            res.send(`<script>alert('Updated');window.location='/forgot'</script>`);
+            res.send(`<script>alert('Updated');window.location='/'</script>`);
         } else {
             res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
         }
