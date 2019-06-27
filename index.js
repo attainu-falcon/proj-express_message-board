@@ -26,17 +26,13 @@ app.use(session({
 }))
 
 app.post('/create', function (req, res) {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+    db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username || req.body.email == result[i].email) {
-                x = 1;
-            }
-        }
-        if (x == 1) {
+        if(result != null) {
             res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`)
-        } else {
+        }
+        else
+        {
             db.collection('Users').insertOne(req.body, function (err, result) {
                 if (err) throw err
                 res.send(`<script>alert('Account created!');window.location='/'</script>`)
@@ -46,21 +42,21 @@ app.post('/create', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+
+    db.collection('Users').findOne({ "username": req.body.username}, function (err, result) {
         if (err) throw err;
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username && req.body.password == result[i].password) {
-                var y = result[i].username
-                var z = result[i].password
-                x = 1;
+        if (result != null) {
+            if (req.body.password == result.password) {
+                req.session.loggedIn=true;
+                req.session.username=result.username;
+                if (result.username == "yashpal") {
+                    res.redirect('/topics')
+                } else {
+                    res.redirect('/topics')
+                }
             }
-        }
-        if (x == 1) {
-            if (y == "yashpal") {
-                res.redirect('/topics')
-            } else {
-                res.redirect('/topics')
+            else {
+                res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
             }
         } else {
             res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
@@ -80,12 +76,12 @@ app.get('/signup', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    // if (!req.session.loggedIn)
+    if (!req.session.loggedIn)
         res.sendFile('login.html', {
             root: __dirname + '/views'
         })
-    // else
-    //     res.redirect("/topics")
+    else
+        res.redirect("/topics")
 })
 
 app.get('/topics', function (req, res) {
@@ -113,32 +109,26 @@ app.get('/forgot', function (req, res) {
 })
 
 app.post('/authPass', (req, res) => {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+    db.collection('Users').findOne({'username': req.body.username}, function (err, result) {
         if (err) throw err;
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username && req.body.password == req.body.ConfirmPassword) {
-                var y = result[i].username;
-                var z = req.body.password;
-                x = 1;
-            }
-        }
-        if (x == 1) {
+
+        if (result != null && req.body.password == req.body.ConfirmPassword)
+        {
             db.collection('Users').updateOne({
-                username: y
+                username: result.username
             }, {
                 $set: {
-                    password: z
+                    password: req.body.password
                 }
             }, function (err, result) {
                 if (err) throw err;
+                res.send(`<script>alert('Updated');window.location='/'</script>`);
             });
-            res.send(`<script>alert('Updated');window.location='/'</script>`);
+
         } else {
             res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
         }
     })
-
 })
 
 app.post('/createpost', function (req, res) {
