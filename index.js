@@ -184,10 +184,13 @@ app.post('/createcomment', function (req, res) {
 app.get('/getpost', function (req, res) {
     db.collection('Topics').findOne({
         '_id': ObjectID(req.query.topicid)
-    }, function (err, result) {
+    }, 
+    {
+        projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid) }}}
+    },
+    function (err, result) {
         if (err) throw err
-        let post = result.posts.find(item => item._id == req.query.postid)
-        res.send(post)
+        res.send(result.posts[0])
     })
 })
 
@@ -202,12 +205,11 @@ app.get('/postlist', function (req, res) {
 app.get('/commentlist', function (req, res) {
     db.collection('Topics').findOne({
         '_id': ObjectID(req.query.topicid)
-    }, 
+    }, {
+        projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid)}}}
+    },
     function (err, result) {
-        console.log(result)
-        console.log(req.query.id)
-        let cmnts = result.posts.find(item => item._id == req.query.postid).comments
-        res.send(cmnts)
+        res.send(result.posts[0].comments)
     })
 })
 
