@@ -41,7 +41,11 @@
                     post,
                     id
                 })
-            }).then(result => console.log(result)).catch(error => console.log(error))
+            }).then(result => {
+                if(result.status==200) {
+                    window.location.replace("leaderboard" + window.location.search)
+                }
+            }).catch(error => console.log(error))
         })
 
         document.querySelector('.send-button').addEventListener('click', function () {
