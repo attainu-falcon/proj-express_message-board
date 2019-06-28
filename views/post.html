@@ -11,7 +11,7 @@
 
 <body>
     <header class="post-container">
-     <form action="/leaderboard"><button class="back">></button></form>
+     <button class="back" onclick="back()">></button>
         <textarea class="post-box" placeholder="post!"></textarea>
         
         <div class="toolbar">
@@ -42,7 +42,11 @@
                     post,
                     id
                 })
-            }).then(result => console.log(result)).catch(error => console.log(error))
+            }).then(result => {
+                if(result.status==200){
+                    window.location.replace("leaderboard" + window.location.search)
+                }
+            }).catch(error => console.log(error))
         })
 
         document.querySelector('.send-button').addEventListener('click', function () {

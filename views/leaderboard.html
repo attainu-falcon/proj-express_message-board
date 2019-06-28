@@ -9,14 +9,14 @@
 </head>
 <body>
     <header class="category-container">
-      <form action="/topics"><button class="back" onclick="back()"><</button></form>
+      <button class="back" onclick="back()"><</button>
         <ul>
             <li><a href="#">Latest</a></li><!--
          --><li>Top Users</li><!--
          --><li>Top Posts</li>
         </ul>
         <div class="toolbar">
-        <h2 class="topic-heading" data-id="5d1311e66b4186f06c58c178">#Jquery</h2>
+        <h2 class="topic-heading" data-id="5d1107d5f3d4d462a31db2fb">#Jquery</h2>
         <button class="post-button" >post!</button>
         </div>
     </header>
@@ -26,7 +26,7 @@
         </ul>
     </main>
     <script>
-        let id  = document.querySelector('.topic-heading').getAttribute('data-id')
+        // let id  = document.querySelector('.topic-heading').getAttribute('data-id')
         fetch('/postlist' + window.location.search)
         .then(res=>res.json())
         .then(result=>renderUI(result))
