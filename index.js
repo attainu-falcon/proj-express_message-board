@@ -25,18 +25,14 @@ app.use(session({
     secret: "message board app"
 }))
 
-app.post('/create', function (req, res) {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+app.post('/register', function (req, res) {
+    db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username || req.body.email == result[i].email) {
-                x = 1;
-            }
-        }
-        if (x == 1) {
+        if(result != null) {
             res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`)
-        } else {
+        }
+        else
+        {
             db.collection('Users').insertOne(req.body, function (err, result) {
                 if (err) throw err
                 res.send(`<script>alert('Account created!');window.location='/'</script>`)
@@ -46,21 +42,21 @@ app.post('/create', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+
+    db.collection('Users').findOne({ "username": req.body.username}, function (err, result) {
         if (err) throw err;
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username && req.body.password == result[i].password) {
-                var y = result[i].username
-                var z = result[i].password
-                x = 1;
+        if (result != null) {
+            if (req.body.password == result.password) {
+                req.session.loggedIn=true;
+                req.session.username=result.username;
+                if (result.username == "yashpal") {
+                    res.redirect('/topics')
+                } else {
+                    res.redirect('/topics')
+                }
             }
-        }
-        if (x == 1) {
-            if (y == "yashpal") {
-                res.redirect('/topics')
-            } else {
-                res.redirect('/topics')
+            else {
+                res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
             }
         } else {
             res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
@@ -80,12 +76,12 @@ app.get('/signup', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    // if (!req.session.loggedIn)
+    if (!req.session.loggedIn)
         res.sendFile('login.html', {
             root: __dirname + '/views'
         })
-    // else
-    //     res.redirect("/topics")
+    else
+        res.redirect("/topics")
 })
 
 app.get('/topics', function (req, res) {
@@ -113,42 +109,35 @@ app.get('/forgot', function (req, res) {
 })
 
 app.post('/authPass', (req, res) => {
-    db.collection('Users').find({}).toArray(function (err, result) {
-        var x = 0;
+    db.collection('Users').findOne({'username': req.body.username}, function (err, result) {
         if (err) throw err;
-        for (var i = 0; i < result.length; i++) {
-            if (req.body.username == result[i].username && req.body.password == req.body.ConfirmPassword) {
-                var y = result[i].username;
-                var z = req.body.password;
-                x = 1;
-            }
-        }
-        if (x == 1) {
+
+        if (result != null && req.body.password == req.body.ConfirmPassword)
+        {
             db.collection('Users').updateOne({
-                username: y
+                username: result.username
             }, {
                 $set: {
-                    password: z
+                    password: req.body.password
                 }
             }, function (err, result) {
                 if (err) throw err;
+                res.send(`<script>alert('Updated');window.location='/'</script>`);
             });
-            res.send(`<script>alert('Updated');window.location='/forgot'</script>`);
+
         } else {
             res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
         }
     })
-
 })
 
 app.post('/createpost', function (req, res) {
-    console.log(req.body)
     let post = {
         '_id': new ObjectID(),
         'content': req.body.post
     }
     db.collection('Topics').updateOne({
-            "name": "Jquery"
+            _id: ObjectID(req.body.id)
         }, {
             $push: {
                 posts: post
@@ -160,21 +149,63 @@ app.post('/createpost', function (req, res) {
         })
 })
 
+app.post('/createcomment', function (req, res) {
+    let cmnt = {
+        '_id': new ObjectID(),
+        'content': req.body.cmnt
+    }
+    db.collection('Topics').updateOne(
+        {
+        'posts._id': ObjectID(req.body.postid)
+        }, 
+        {
+            $push: 
+            {
+                'posts.$[el].comments': cmnt
+            }
+        }, 
+        {
+            arrayFilters: [{ 'el._id': ObjectID(req.body.postid)}]
+        },
+        function (err, result) {
+            if (err) throw err
+            if(result.result.nModified) res.sendStatus(200)
+        }
+    )
+})
+
 app.get('/getpost', function (req, res) {
     db.collection('Topics').findOne({
-        '_id': ObjectID("5d1311e66b4186f06c58c178")
-    }, function (err, result) {
+        'posts._id': ObjectID(req.query.postid)
+    },
+    {
+        projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid) }}}
+    },
+    function (err, result) {
         if (err) throw err
-        let post = result.posts.find(item => item._id == req.query.postid)
-        res.send(post)
+        if(result!=null)
+            res.send(result.posts[0])
+        else
+            res.end()
     })
 })
 
-app.post('/getpostlist', function (req, res) {
+app.get('/postlist', function (req, res) {
     db.collection('Topics').find({
-        '_id': ObjectID(req.body)
+        '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
         res.send(result)
+    })
+})
+
+app.get('/commentlist', function (req, res) {
+    db.collection('Topics').findOne({
+        'posts._id': ObjectID(req.query.postid)
+    }, {
+        projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid)}}}
+    },
+    function (err, result) {
+        res.send(result.posts[0].comments)
     })
 })
 
@@ -184,6 +215,65 @@ app.put('/updatepost', function (req, res) {
 
 app.delete('/deletepost', function (req, res) {
 
+})
+
+app.get('/likes', function (req, res) {
+    let pipeline = [
+        { 
+            $match: 
+            {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        { 
+            $match: 
+            {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $project: 
+            {   
+                _id:0,
+                likes: 
+                {
+                    $size: 
+                    { 
+                        $ifNull: [ '$posts.likes', [] ]
+                    }
+                }
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        if(result[0]) res.send(result[0].likes.toString())
+        res.end()
+    })
+})
+
+app.get('/updatelikes', function (req, res) {
+    db.collection('Topics').updateOne(
+        {
+        'posts._id': ObjectID(req.query.postid)
+        }, 
+        {
+            $addToSet: 
+            {
+                'posts.$[el].likes': req.session.username
+            }
+        }, 
+        {
+            arrayFilters: [{ 'el._id': ObjectID(req.query.postid)}]
+        },
+        function (err, result) {
+            if (err) throw err
+            if(result.result.nModified) res.sendStatus(200)
+        }
+    )
 })
 
 app.get('/*', function (req, res) {

@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="category-container">
-      <form action="/topics"><button class="back">></button></form>
+      <form action="/topics"><button class="back" onclick="back()"><</button></form>
         <ul>
             <li><a href="#">Latest</a></li><!--
          --><li>Top Users</li><!--
@@ -27,15 +27,10 @@
     </main>
     <script>
         let id  = document.querySelector('.topic-heading').getAttribute('data-id')
-        fetch('/getpostlist',
-        {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain'
-        },
-        body: id
-        })
-        .then(res=>res.json()).then(result=>renderUI(result)).catch(err=> console.log(err))
+        fetch('/postlist' + window.location.search)
+        .then(res=>res.json())
+        .then(result=>renderUI(result))
+        .catch(err=> console.log(err))
         
         function renderUI(result) {
             for (post of result[0].posts) {
@@ -44,18 +39,25 @@
                 a.textContent = post.content
                 a.setAttribute('onclick', 'postClick("' + post._id + '")') 
                 li.appendChild(a)
-                document.querySelector('.posts-container ul').appendChild(li)
+                document.querySelector('.posts-container ul').prepend(li)
             }
         }   
         
         function postClick(id){
-            let url = 'post?postid=' + id
+            let url = 'post' + window.location.search + '&postid=' + id
             window.location.replace(url) 
         }
         
         document.querySelector('.post-button').addEventListener('click', function(){
-            window.location.replace('post')
+            window.location.replace('post' + window.location.search)
         })
+
+        function back() {
+            // let urlParams = new URLSearchParams(window.location.search)
+            // console.log(urlParams.has('post'))
+            // let id = urlParams.get('topicid')
+            window.location.replace('/topics')
+        }
     </script>
 </body>
 </html>
