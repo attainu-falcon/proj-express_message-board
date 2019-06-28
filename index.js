@@ -132,7 +132,6 @@ app.post('/authPass', (req, res) => {
 })
 
 app.post('/createpost', function (req, res) {
-    console.log(req.body)
     let post = {
         '_id': new ObjectID(),
         'content': req.body.post
@@ -151,36 +150,40 @@ app.post('/createpost', function (req, res) {
 })
 
 app.post('/createcomment', function (req, res) {
-    console.log(req.body)
     let cmnt = {
         '_id': new ObjectID(),
         'content': req.body.cmnt
     }
-    db.collection('Topics').updateOne({
-        _id: ObjectID(req.body.topicid)
-        }, {
-            $push: {
+    db.collection('Topics').updateOne(
+        {
+        'posts._id': ObjectID(req.body.postid)
+        }, 
+        {
+            $push: 
+            {
                 'posts.$[el].comments': cmnt
             }
-        }, {
+        }, 
+        {
             arrayFilters: [{ 'el._id': ObjectID(req.body.postid)}]
         },
         function (err, result) {
             if (err) throw err
-            if(result.result.nModified) res.send(200)
-        })
+            if(result.result.nModified) res.sendStatus(200)
+        }
+    )
 })
 
 app.get('/getpost', function (req, res) {
     db.collection('Topics').findOne({
-        '_id': ObjectID(req.query.topicid)
+        'posts._id': ObjectID(req.query.postid)
     },
     {
         projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid) }}}
     },
     function (err, result) {
         if (err) throw err
-        if('posts' in result)
+        if(result!=null)
             res.send(result.posts[0])
         else
             res.end()
@@ -197,7 +200,7 @@ app.get('/postlist', function (req, res) {
 
 app.get('/commentlist', function (req, res) {
     db.collection('Topics').findOne({
-        '_id': ObjectID(req.query.topicid)
+        'posts._id': ObjectID(req.query.postid)
     }, {
         projection: { posts: { $elemMatch: { _id: ObjectID(req.query.postid)}}}
     },
@@ -212,6 +215,65 @@ app.put('/updatepost', function (req, res) {
 
 app.delete('/deletepost', function (req, res) {
 
+})
+
+app.get('/likes', function (req, res) {
+    let pipeline = [
+        { 
+            $match: 
+            {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        { 
+            $match: 
+            {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $project: 
+            {   
+                _id:0,
+                likes: 
+                {
+                    $size: 
+                    { 
+                        $ifNull: [ '$posts.likes', [] ]
+                    }
+                }
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        if(result[0]) res.send(result[0].likes.toString())
+        res.end()
+    })
+})
+
+app.get('/updatelikes', function (req, res) {
+    db.collection('Topics').updateOne(
+        {
+        'posts._id': ObjectID(req.query.postid)
+        }, 
+        {
+            $addToSet: 
+            {
+                'posts.$[el].likes': req.session.username
+            }
+        }, 
+        {
+            arrayFilters: [{ 'el._id': ObjectID(req.query.postid)}]
+        },
+        function (err, result) {
+            if (err) throw err
+            if(result.result.nModified) res.sendStatus(200)
+        }
+    )
 })
 
 app.get('/*', function (req, res) {

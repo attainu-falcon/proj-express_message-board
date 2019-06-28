@@ -14,7 +14,7 @@
         <button class="back" onclick="back()"><</button> 
         <textarea class="post-box" placeholder="post!"></textarea>
         <div class="toolbar">
-            <h2 class="topic-heading">★ 1</h2>
+            <h2 class="topic-heading">★ <span class="likes"></span></h2>
             <button class="post-button">post</button>
         </div>
     </header>
@@ -105,10 +105,30 @@
             document.querySelector('.post-box').value = result.content
         }
 
+        document.querySelector('.topic-heading').addEventListener('click', function () {
+            fetch('/updatelikes' + window.location.search)
+            .then(result=> {
+                if(result.status==200) {
+                    let count = parseInt(document.querySelector('.likes').innerText)
+                    document.querySelector('.likes').innerText = count+1
+                }
+            }).catch(err=>console.log(err))
+        })
+            
+        
+        fetch('/likes' + window.location.search)
+            .then(res=>res.text()).then(result=> renderLikes(result)).catch(err=>console.log(err))
+
+        function renderLikes(result) {
+            document.querySelector('.likes').innerText = result            
+        }
+        
+
         let urlParams = new URLSearchParams(window.location.search)
         if(!urlParams.has('postid')) {
             document.querySelector('.insert-comment-box').style.display = 'none'
             document.querySelector('.send-button').style.display = 'none'
+            document.querySelector('.topic-heading').style.display = 'none'
         } else {
             document.querySelector('.post-button').innerText = 'Edit'
             document.querySelector('.post-button').style.visibility = 'hidden'
