@@ -190,10 +190,62 @@ app.get('/getpost', function (req, res) {
     })
 })
 
-app.get('/postlist', function (req, res) {
+app.get('/latestposts', function (req, res) {
     db.collection('Topics').find({
         '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
+        console.log(result[0].posts)
+        res.send(result[0].posts)
+    })
+})
+
+app.get('/topusers', function (req, res) {
+    db.collection('Topics').find({
+        '_id': ObjectID(req.query.topicid)
+    }).toArray(function (err, result) {
+        res.send(result[0].posts)
+    })
+})
+
+app.get('/topposts', function (req, res) {
+    let pipeline = [
+        {
+            $match: 
+            {
+                _id: ObjectID(req.query.topicid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $addFields: 
+            {
+                likes: 
+                {
+                    $size: {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        },
+        {
+            $sort:
+            {
+                'likes': 1,
+                'posts._id': 1
+            }
+        },
+        {
+            $project: 
+            {
+                _id: '$posts._id',
+                content: '$posts.content'
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        console.log(result)
         res.send(result)
     })
 })

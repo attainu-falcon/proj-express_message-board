@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +8,23 @@
     <link rel="stylesheet" href="/styles/styles.css">
     <title>Topics</title>
 </head>
-<body>
+
+<body onhashchange="listPosts()">
     <header class="category-container">
-      <form action="/topics"><button class="back" onclick="back()"><</button></form>
-        <ul>
-            <li><a href="#">Latest</a></li><!--
-         --><li>Top Users</li><!--
-         --><li>Top Posts</li>
-        </ul>
-        <div class="toolbar">
-        <h2 class="topic-heading" data-id="5d1311e66b4186f06c58c178">#Jquery</h2>
-        <button class="post-button" >post!</button>
-        </div>
+        <form action="/topics"><button class="back" onclick="back()">
+                <</button> </form> <ul>
+                    <li><a class="sort" href="#latestposts">Latest</a></li>
+                    <!--
+         -->
+                    <li><a class="sort" href="#topusers">Top Users</a></li>
+                    <!--
+         -->
+                    <li><a class="sort" href="#topposts">Top Posts</a></li>
+                    </ul>
+                    <div class="toolbar">
+                        <h2 class="topic-heading" data-id="5d1311e66b4186f06c58c178">#Jquery</h2>
+                        <button class="post-button">post!</button>
+                    </div>
     </header>
     <main class="posts-container">
         <ul>
@@ -26,29 +32,59 @@
         </ul>
     </main>
     <script>
-        let id  = document.querySelector('.topic-heading').getAttribute('data-id')
-        fetch('/postlist' + window.location.search)
-        .then(res=>res.json())
-        .then(result=>renderUI(result))
-        .catch(err=> console.log(err))
-        
-        function renderUI(result) {
-            for (post of result[0].posts) {
-                let li = document.createElement('li')
-                let a = document.createElement('a')
-                a.textContent = post.content
-                a.setAttribute('onclick', 'postClick("' + post._id + '")') 
-                li.appendChild(a)
-                document.querySelector('.posts-container ul').prepend(li)
+        function listPosts() {
+            switch (window.location.hash) {
+                case '#latestposts':
+                    fetch('/latestposts' + window.location.search)
+                        .then(res => res.json())
+                        .then(result => renderUI(result))
+                        .catch(err => console.log(err))                    
+                    break;
+
+                case '#topposts':
+                    fetch('/topposts' + window.location.search)
+                        .then(res => res.json())
+                        .then(result => renderUI(result))
+                        .catch(err => console.log(err))                    
+                    break;
+
+                case '#topusers':
+                    fetch('/topusers' + window.location.search)
+                        .then(res => res.json())
+                        .then(result => renderUI(result))
+                        .catch(err => console.log(err))                    
+                    break;
+            
+                default:
+                    fetch('/latestposts' + window.location.search)
+                        .then(res => res.json())
+                        .then(result => renderUI(result))
+                        .catch(err => console.log(err)) 
+                    break;
             }
-        }   
-        
-        function postClick(id){
-            let url = 'post' + window.location.search + '&postid=' + id
-            window.location.replace(url) 
+
+            
+            function renderUI(result) {
+                document.querySelector('.posts-container ul').innerHTML = ''
+                for (post of result) {
+                    let li = document.createElement('li')
+                    let a = document.createElement('a')
+                    a.textContent = post.content
+                    a.setAttribute('onclick', 'postClick("' + post._id + '")')
+                    li.appendChild(a)
+                    document.querySelector('.posts-container ul').prepend(li)
+                }
+            }
         }
-        
-        document.querySelector('.post-button').addEventListener('click', function(){
+
+        listPosts()
+
+        function postClick(id) {
+            let url = 'post' + window.location.search + '&postid=' + id + window.location.hash
+            window.location.replace(url)
+        }
+
+        document.querySelector('.post-button').addEventListener('click', function () {
             window.location.replace('post' + window.location.search)
         })
 
@@ -60,4 +96,5 @@
         }
     </script>
 </body>
+
 </html>
