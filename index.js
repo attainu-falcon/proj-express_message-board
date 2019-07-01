@@ -5,8 +5,8 @@ const mongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectID
 
 var url
-if (process.env.DB_URL) {
-    url = process.env.DB_URL
+if (process.env.database_url) {
+    url = process.env.database_url
 } else {
     url = 'mongodb://127.0.0.1:27017'
 }
