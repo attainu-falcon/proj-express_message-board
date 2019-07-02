@@ -15,19 +15,40 @@
         </header>
         <main class="topics-container">
             <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
-            <button class="active-button">+</button>
+            <button class="active-button" onclick="addTopic()">+</button>
             <button class="active-button">-</button>
             <button class="active-button">Modify</button>
             <ul>
-                <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
+                <!-- <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
                 <li>React</li>
                 <li>Jquery</li>
                 <li>MongoDB</li>
                 <li>Redux</li>
                 <li>Heroku</li>
                 <li>Handlebars</li>
-                <li>CSS</li>
+                <li>CSS</li> -->
             </ul>
     </main>
+    <script>
+        fetch('/listtopics').then(res=>res.json()).then(result=>renderTopics(result)).catch(err=>console.log(err))
+        function renderTopics(result) {
+            for (const topic of result) {
+                console.log(result)
+                let li = document.createElement('li')
+                let a = document.createElement('a')
+                a.href = 'leaderboard?topicid=' + topic._id + '#latestposts'
+                a.textContent = topic.name
+                li.appendChild(a)
+                document.querySelector('.topics-container ul').appendChild(li)
+            }            
+        }
+        function addTopic() {
+            let name = document.querySelector('.insert-topic').value
+            fetch('/addtopic?name=' + name)
+            .then(res=>res.json())
+            .then(result=>renderTopics(result))
+            .catch(err=>console.log(err))
+        }
+    </script>
 </body>
 </html>

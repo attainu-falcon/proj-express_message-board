@@ -328,6 +328,20 @@ app.get('/updatelikes', function (req, res) {
     )
 })
 
+app.get('/listtopics', (req, res) => {
+    db.collection('Topics').find({}, {
+        projection: {name:1}
+    }).toArray((err, result)=>
+        res.send(result)
+    )
+});
+
+app.get('/addtopic', (req, res) => {
+    db.collection('Topics').insertOne({name: req.query.name}, (err, result)=>
+        res.send(result.ops)
+    )
+});
+
 app.get('/*', function (req, res) {
     res.send('404 page Not Found')
 })
