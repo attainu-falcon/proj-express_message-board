@@ -194,8 +194,7 @@ app.get('/latestposts', function (req, res) {
     db.collection('Topics').find({
         '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
-        console.log(result[0].posts)
-        res.send(result[0].posts)
+        res.send(result[0])
     })
 })
 
@@ -203,7 +202,7 @@ app.get('/topusers', function (req, res) {
     db.collection('Topics').find({
         '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
-        res.send(result[0].posts)
+        res.send(result[0])
     })
 })
 
@@ -237,16 +236,26 @@ app.get('/topposts', function (req, res) {
             }
         },
         {
-            $project: 
+            $group: 
             {
-                _id: '$posts._id',
-                content: '$posts.content'
+                _id: '$_id',
+                name: 
+                {
+                    $first: '$name'
+                },
+                posts: 
+                {
+                    $push: 
+                    {
+                        _id:'$posts._id',
+                        content:'$posts.content'
+                    }
+                }
             }
         }
     ]
     db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
-        console.log(result)
-        res.send(result)
+        res.send(result[0])
     })
 })
 
