@@ -105,7 +105,7 @@
             let urlParams = new URLSearchParams(window.location.search)
             // console.log(urlParams.has('post'))
             let id = urlParams.get('topicid')
-            window.location.replace('/leaderboard?topicid=' + id)
+            window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
         }
 
         fetch('/getpost' + window.location.search)

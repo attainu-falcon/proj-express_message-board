@@ -190,11 +190,72 @@ app.get('/getpost', function (req, res) {
     })
 })
 
-app.get('/postlist', function (req, res) {
+app.get('/latestposts', function (req, res) {
     db.collection('Topics').find({
         '_id': ObjectID(req.query.topicid)
     }).toArray(function (err, result) {
-        res.send(result)
+        res.send(result[0])
+    })
+})
+
+app.get('/topusers', function (req, res) {
+    db.collection('Topics').find({
+        '_id': ObjectID(req.query.topicid)
+    }).toArray(function (err, result) {
+        res.send(result[0])
+    })
+})
+
+app.get('/topposts', function (req, res) {
+    let pipeline = [
+        {
+            $match: 
+            {
+                _id: ObjectID(req.query.topicid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $addFields: 
+            {
+                likes: 
+                {
+                    $size: {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        },
+        {
+            $sort:
+            {
+                'likes': 1,
+                'posts._id': 1
+            }
+        },
+        {
+            $group: 
+            {
+                _id: '$_id',
+                name: 
+                {
+                    $first: '$name'
+                },
+                posts: 
+                {
+                    $push: 
+                    {
+                        _id:'$posts._id',
+                        content:'$posts.content'
+                    }
+                }
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        res.send(result[0])
     })
 })
 
@@ -285,6 +346,19 @@ app.get('/deletetopic',function(req,res){
     })
 })
 
+app.get('/listtopics', (req, res) => {
+    db.collection('Topics').find({}, {
+        projection: {name:1}
+    }).toArray((err, result)=>
+        res.send(result)
+    )
+});
+
+app.get('/addtopic', (req, res) => {
+    db.collection('Topics').insertOne({name: req.query.name}, (err, result)=>
+        res.send(result.ops)
+    )
+});
 
 app.get('/*', function (req, res) {
     res.send('404 page Not Found')
