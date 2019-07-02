@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/scripts/tiny-toast.js"></script>
     <title>Post</title>
 </head>
 
@@ -33,6 +34,8 @@
             var cmnt = document.querySelector('.insert-comment-box').innerText;
             let urlParams = new URLSearchParams(window.location.search)
             let id = urlParams.get('topicid')
+            if(post!="")
+            {
             fetch('/createpost', {
                 method: 'POST',
                 headers: {
@@ -46,7 +49,10 @@
                 if(result.status==200) {
                     window.location.replace("leaderboard" + window.location.search)
                 }
-            }).catch(error => console.log(error))
+            }).catch(error => console.log(error))}
+            else{
+                    tinyToast.show("post is blank.!").hide(700)
+            }
         })
 
         document.querySelector('.send-button').addEventListener('click', function () {
