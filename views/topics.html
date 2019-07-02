@@ -16,7 +16,7 @@
         <main class="topics-container">
             <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
             <button class="active-button">+</button>
-            <button class="active-button">-</button>
+            <button class="active-button" onclick="deleteTopic()">-</button>
             <button class="active-button">Modify</button>
             <ul>
                 <li><a href="/leaderboard?topicid=5d1af63485b31d5a41adeb81">Jquery</a></li>
@@ -29,5 +29,24 @@
                 <li>CSS</li>
             </ul>
     </main>
+    <script>
+    function deleteTopic(){
+        let name = document.querySelector('.insert-topic').value
+        fetch('/deletetopic?name=' + name)
+        .then(res =>{
+            if(res.status==200){
+                let list =document.querySelectorAll('.topics-container li');
+                for(var i=0;i<list.length;i++){
+                    if(req.query.name == list[i].name){
+                        delete list[i].name
+                    }
+                }
+
+
+            }
+        })
+
+    }
+    </script>
 </body>
 </html>

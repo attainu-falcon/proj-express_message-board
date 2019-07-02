@@ -275,7 +275,16 @@ app.get('/updatelikes', function (req, res) {
             if(result.result.nModified) res.sendStatus(200)
         }
     )
+})       
+
+app.get('/deletetopic',function(req,res){
+    db.collection('Topics').deleteOne({'name' : req.query.name},function(err,result){
+        //if(err) throw err; 
+        //console.log(result)
+        res.send(result)
+    })
 })
+
 
 app.get('/*', function (req, res) {
     res.send('404 page Not Found')
