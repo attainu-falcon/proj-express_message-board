@@ -360,6 +360,26 @@ app.get('/addtopic', (req, res) => {
     )
 });
 
+app.get('/deletepost', (req, res)=> {
+    db.collection('Topics').updateOne(
+        {
+            'posts._id': ObjectID(req.query.postid)
+        },
+        {
+            '$pull': 
+            {
+                posts: 
+                {
+                    _id: ObjectID(req.query.postid)
+                }
+            }
+        }, function(err, result) {
+            //console.log(result.result.nModified)
+            res.send(result.result.nModified.toString())
+        }
+    )
+})
+
 app.get('/*', function (req, res) {
     res.send('404 page Not Found')
 })
