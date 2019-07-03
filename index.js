@@ -3,39 +3,45 @@ const app = express()
 const session = require('express-session')
 const mongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectID
-
+var hbs=require("express-handlebars");
+app.use(express.static('public'))
+app.use(express.urlencoded())
 var url
-if (process.env.database_url) {
-    url = process.env.database_url
+if (process.env.DB_URL) {
+    url = process.env.DB_URL
 } else {
     url = 'mongodb://127.0.0.1:27017'
 }
-
-var db
+var db;
 mongoClient.connect(url, function (err, client) {
     if (err) throw err
     db = client.db("MessageBoard")
 })
-
-app.use(express.static('public'))
-app.use(express.urlencoded())
 app.use(express.json())
 app.use(express.text())
 app.use(session({
     secret: "message board app"
 }))
+var main=hbs.create({
+    extname:"hbs"
+})
+app.engine('hbs' , main.engine)
+app.set('view engine','hbs');
+app.set('views',__dirname+'/views');
 
 app.post('/register', function (req, res) {
     db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
         if(result != null) {
-            res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`)
+            req.session.signup=false;
+            res.redirect('/signup');
         }
         else
         {
             db.collection('Users').insertOne(req.body, function (err, result) {
                 if (err) throw err
-                res.send(`<script>alert('Account created!');window.location='/'</script>`)
+                req.session.signup=true;
+            res.redirect('/signup');
             })
         }
     })
@@ -50,16 +56,20 @@ app.post('/auth', (req, res) => {
                 req.session.loggedIn=true;
                 req.session.username=result.username;
                 if (result.username == "yashpal") {
+
                     res.redirect('/topics')
                 } else {
+
                     res.redirect('/topics')
                 }
             }
             else {
-                res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
+                req.session.loggedIn=false;
+                res.redirect('/');
             }
         } else {
-            res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
+            req.session.loggedIn=false;
+                res.redirect('/');
         }
     })
 })
@@ -67,45 +77,6 @@ app.post('/auth', (req, res) => {
 app.get('/logout', function (req, res) {
     req.session.destroy()
     res.redirect('/')
-})
-
-app.get('/signup', function (req, res) {
-    res.sendFile('signup.html', {
-        root: __dirname + '/views'
-    });
-});
-
-app.get('/', function (req, res) {
-    if (!req.session.loggedIn)
-        res.sendFile('login.html', {
-            root: __dirname + '/views'
-        })
-    else
-        res.redirect("/topics")
-})
-
-app.get('/topics', function (req, res) {
-    res.sendFile('topics.html', {
-        root: __dirname + '/views'
-    })
-})
-
-app.get('/leaderboard', function (req, res) {
-    res.sendFile('leaderboard.html', {
-        root: __dirname + '/views'
-    });
-});
-
-app.get('/post', function (req, res) {
-    res.sendFile('post.html', {
-        root: __dirname + '/views'
-    })
-})
-
-app.get('/forgot', function (req, res) {
-    res.sendFile('forgot.html', {
-        root: __dirname + '/views'
-    })
 })
 
 app.post('/authPass', (req, res) => {
@@ -122,14 +93,17 @@ app.post('/authPass', (req, res) => {
                 }
             }, function (err, result) {
                 if (err) throw err;
-                res.send(`<script>alert('Updated');window.location='/'</script>`);
+               req.session.forgot=true;
+               res.redirect('/forgot');
             });
 
         } else {
-            res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
+           req.session.forgot=false;
+           res.redirect('/forgot');
         }
     })
 })
+
 
 app.post('/createpost', function (req, res) {
     let post = {
@@ -209,7 +183,7 @@ app.get('/topusers', function (req, res) {
 app.get('/topposts', function (req, res) {
     let pipeline = [
         {
-            $match: 
+            $match:
             {
                 _id: ObjectID(req.query.topicid)
             }
@@ -218,9 +192,9 @@ app.get('/topposts', function (req, res) {
             $unwind: '$posts'
         },
         {
-            $addFields: 
+            $addFields:
             {
-                likes: 
+                likes:
                 {
                     $size: {
                         $ifNull: ['$posts.likes', []]
@@ -236,16 +210,16 @@ app.get('/topposts', function (req, res) {
             }
         },
         {
-            $group: 
+            $group:
             {
                 _id: '$_id',
-                name: 
+                name:
                 {
                     $first: '$name'
                 },
-                posts: 
+                posts:
                 {
-                    $push: 
+                    $push:
                     {
                         _id:'$posts._id',
                         content:'$posts.content'
@@ -276,7 +250,7 @@ app.put('/updatepost', function (req, res) {
 
 app.delete('/deletepost', function (req, res) {
     db.collection()
-   
+
 })
 
 app.get('/likes', function (req, res) {
@@ -336,11 +310,11 @@ app.get('/updatelikes', function (req, res) {
             if(result.result.nModified) res.sendStatus(200)
         }
     )
-})       
+})
 
 app.get('/deletetopic',function(req,res){
     db.collection('Topics').deleteOne({'name' : req.query.name},function(err,result){
-        //if(err) throw err; 
+        //if(err) throw err;
         //console.log(result)
         res.send(result)
     })
@@ -366,9 +340,9 @@ app.get('/deletepost', (req, res)=> {
             'posts._id': ObjectID(req.query.postid)
         },
         {
-            '$pull': 
+            '$pull':
             {
-                posts: 
+                posts:
                 {
                     _id: ObjectID(req.query.postid)
                 }
@@ -380,10 +354,93 @@ app.get('/deletepost', (req, res)=> {
     )
 })
 
-app.get('/*', function (req, res) {
-    res.send('404 page Not Found')
+app.get('/',function(req,res){
+    delete req.session.signup;
+    delete req.session.forgot;
+     if (req.session.loggedIn == true){
+        res.redirect("/topics")
+     }
+    else if(req.session.loggedIn == false) {
+        res.render("login",{
+            title:"Login Page",
+            style: "login",
+            var :"Wrong UserName or Password"
+            });}
+    else{
+        res.render("login",{
+            title:"Login Page",
+            style: "login"
+            });
+    }
 })
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('app listening on port 3000!')
+app.get('/signup',function(req,res){
+delete req.session.loggedIn;
+if(req.session.signup ==true){
+    res.render("login",{
+        title:"Login Page",
+        style: "login",
+        var : "Success"
+        });
+}
+else if (req.session.signup ==false){
+    res.render("signup",{
+        title:"Signup Page",
+        style: "login",
+        var :"Failed"
+        });
+}
+else{
+    res.render("signup",{
+        title:"Signup Page",
+        style: "login"
+        });
+
+}
+
 })
+app.get('/forgot',function(req,res){
+delete req.session.loggedIn;
+if(req.session.forgot==true){
+    res.render("forgot",{
+        title:"Forgot Page",
+        style: "login",
+        var :"Updated"
+        });}
+else if(req.session.forgot==false){
+res.render("forgot",{
+title:"Forgot Page",
+style: "login",
+var : "Username or password do not match"
+});}
+else{
+    res.render("forgot",{
+        title:"Forgot Page",
+        style: "login"
+        }); }
+    })
+app.get('/topics',function(req,res){
+    res.render("topics",{
+    title:"Topic Page",
+    style: "styles"
+    });})
+
+app.get('/leaderboard',function(req,res){
+    res.render("leaderboard",{
+    title:"LeaderBoard Page",
+    style: "styles"
+    });})
+
+app.get('/post',function(req,res){
+    res.render("post",{
+    title:"Post Page",
+    style: "styles"
+    });})
+
+
+    app.get('/*', function (req, res) {
+        res.send('404 page Not Found')
+    })
+
+app.set('port',3000);
+app.listen(app.get("port"));
