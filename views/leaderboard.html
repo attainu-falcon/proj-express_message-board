@@ -22,7 +22,7 @@
                     <li><a class="sort" href="#topposts">Top Posts</a></li>
                     </ul>
                     <div class="toolbar">
-                        <h2 class="topic-heading" data-id="5d1311e66b4186f06c58c178">#Jquery</h2>
+                        <h2 class="topic-heading"></h2>
                         <button class="post-button">post!</button>
                     </div>
     </header>
@@ -65,8 +65,9 @@
 
 
             function renderUI(result) {
+                document.querySelector('.topic-heading').innerHTML = '#'+result.name
                 document.querySelector('.posts-container ul').innerHTML = ''
-                for (post of result) {
+                for (post of result.posts) {
                     let li = document.createElement('li')
                     let a = document.createElement('a')
                     a.textContent = post.content
