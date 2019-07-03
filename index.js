@@ -5,8 +5,8 @@ const mongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectID
 
 var url
-if (process.env.DB_URL) {
-    url = process.env.DB_URL
+if (process.env.database_url) {
+    url = process.env.database_url
 } else {
     url = 'mongodb://127.0.0.1:27017'
 }
@@ -275,7 +275,8 @@ app.put('/updatepost', function (req, res) {
 })
 
 app.delete('/deletepost', function (req, res) {
-
+    db.collection()
+   
 })
 
 app.get('/likes', function (req, res) {
@@ -335,6 +336,14 @@ app.get('/updatelikes', function (req, res) {
             if(result.result.nModified) res.sendStatus(200)
         }
     )
+})       
+
+app.get('/deletetopic',function(req,res){
+    db.collection('Topics').deleteOne({'name' : req.query.name},function(err,result){
+        //if(err) throw err; 
+        //console.log(result)
+        res.send(result)
+    })
 })
 
 app.get('/listtopics', (req, res) => {
@@ -350,6 +359,26 @@ app.get('/addtopic', (req, res) => {
         res.send(result.ops)
     )
 });
+
+app.get('/deletepost', (req, res)=> {
+    db.collection('Topics').updateOne(
+        {
+            'posts._id': ObjectID(req.query.postid)
+        },
+        {
+            '$pull': 
+            {
+                posts: 
+                {
+                    _id: ObjectID(req.query.postid)
+                }
+            }
+        }, function(err, result) {
+            //console.log(result.result.nModified)
+            res.send(result.result.nModified.toString())
+        }
+    )
+})
 
 app.get('/*', function (req, res) {
     res.send('404 page Not Found')
