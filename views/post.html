@@ -12,7 +12,7 @@
 
 <body>
     <header class="post-container">
-     <button class="back" onclick="back()">></button>
+     <button class="back" onclick="back()"><</button>
         <textarea class="post-box" placeholder="post!"></textarea>
         
         <div class="toolbar">
@@ -142,7 +142,7 @@
             document.querySelector('.send-button').style.display = 'none'
             document.querySelector('.topic-heading').style.display = 'none'
         } else {
-            //document.querySelector('.post-button').innerText = 'Edit'
+            document.querySelector('.post-button').innerText = 'Edit'
             // document.querySelector('.post-button').style.visibility = 'hidden'
             document.querySelector('.post-box').readOnly = true
         }

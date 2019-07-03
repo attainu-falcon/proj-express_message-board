@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="/styles/styles.css">
+        <script src="/scripts/tiny-toast.js"></script>
         <title>Topics</title>
     </head>
     <body class="topics">
@@ -44,10 +45,14 @@
         }
         function addTopic() {
             let name = document.querySelector('.insert-topic').value
-            fetch('/addtopic?name=' + name)
-            .then(res=>res.json())
-            .then(result=>renderTopics(result))
-            .catch(err=>console.log(err))
+            if(name!=''){
+                fetch('/addtopic?name=' + name)
+                .then(res=>res.json())
+                .then(result=>renderTopics(result))
+                .catch(err=>console.log(err))
+            } else {
+                tinyToast.show("Type in a Topic name.").hide(2000)
+            }
         }
     </script>
 </body>
