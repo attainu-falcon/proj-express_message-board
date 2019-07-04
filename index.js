@@ -270,14 +270,14 @@ app.get('/commentlist', function (req, res) {
     })
 })
 
-app.put('/updatepost', function (req, res) {
+// app.put('/updatepost', function (req, res) {
 
-})
+// })
 
-app.delete('/deletepost', function (req, res) {
-    db.collection()
+// app.delete('/deletepost', function (req, res) {
+//     db.collection()
    
-})
+// })
 
 app.get('/likes', function (req, res) {
     let pipeline = [
@@ -339,10 +339,15 @@ app.get('/updatelikes', function (req, res) {
 })       
 
 app.get('/deletetopic',function(req,res){
-    db.collection('Topics').deleteOne({'name' : req.query.name},function(err,result){
+    db.collection('Topics').deleteOne({"_id" : ObjectID(req.query.topicid)},function(err,result){
+        console.log(result.result.n)
+
         //if(err) throw err; 
         //console.log(result)
-        res.send(result)
+       // res.send(result.result.nModified.toString())
+       //console.log(result)
+       res.send(result.result.n.toString())
+       
     })
 })
 
@@ -374,10 +379,25 @@ app.get('/deletepost', (req, res)=> {
                 }
             }
         }, function(err, result) {
-            //console.log(result.result.nModified)
+            //console.log(result.result.nModified.toString())
             res.send(result.result.nModified.toString())
         }
     )
+})
+
+app.post('/modifypost', (req,res) => {
+    console.log(req.body)
+    db.collection('Topics').updateOne({"posts._id":ObjectID(req.body.id)},{
+       '$set':{
+                "posts.$.content": req.body.post 
+            
+            }
+
+    },function(err,result){
+        
+        res.send(result.result.nModified.toString())
+        
+    })     
 })
 
 app.get('/*', function (req, res) {
