@@ -3,40 +3,74 @@ const app = express()
 const session = require('express-session')
 const mongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectID
-
+var hbs=require("express-handlebars");
+app.use(express.static('public'))
+app.use(express.urlencoded())
 var url
-if (process.env.database_url) {
-    url = process.env.database_url
+if (process.env.DB_URL) {
+    url = process.env.DB_URL
 } else {
     url = 'mongodb://127.0.0.1:27017'
 }
-
-var db
+var db;
 mongoClient.connect(url, function (err, client) {
     if (err) throw err
     db = client.db("MessageBoard")
 })
-
-app.use(express.static('public'))
-app.use(express.urlencoded())
 app.use(express.json())
 app.use(express.text())
 app.use(session({
     secret: "message board app"
 }))
+var main=hbs.create({
+    extname:"hbs"
+})
+app.engine('hbs' , main.engine)
+app.set('view engine','hbs');
+app.set('views',__dirname+'/views');
 
 app.post('/register', function (req, res) {
     db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
         if(result != null) {
-            res.send(`<script>alert('Username or Email already exist');window.location='/signup'</script>`)
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"username or email id are already exist"
+                });
         }
         else
         {
+           if(req.body.username.length<=5){
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"username cannot be less than 5 Character"
+                });
+
+           }
+           else if(req.body.password.length<=8){
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"Password cannot be less than 8 Character"
+                });
+
+           }
+            else{
+
             db.collection('Users').insertOne(req.body, function (err, result) {
+
+
                 if (err) throw err
-                res.send(`<script>alert('Account created!');window.location='/'</script>`)
+                res.render("login",{
+                    title:"Login Page",
+                    style: "login",
+                    var : "Acoount Created"
+                    });
             })
+        }
+
         }
     })
 })
@@ -48,18 +82,30 @@ app.post('/auth', (req, res) => {
         if (result != null) {
             if (req.body.password == result.password) {
                 req.session.loggedIn=true;
-                req.session.username=result.username;
+                req.session.username=req.body.username;
                 if (result.username == "yashpal") {
+
                     res.redirect('/topics')
                 } else {
+
                     res.redirect('/topics')
                 }
             }
             else {
-                res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
+                req.session.loggedIn=false;
+                res.render("login",{
+                    title:"Login Page",
+                    style: "login",
+                    var :"Wrong UserName or Password"
+                    });
             }
         } else {
-            res.send(`<script>alert('wrong credentials!');window.location='/'</script>`);
+            req.session.loggedIn=false;
+            res.render("login",{
+                title:"Login Page",
+                style: "login",
+                var :"Wrong UserName or Password"
+                });
         }
     })
 })
@@ -69,51 +115,19 @@ app.get('/logout', function (req, res) {
     res.redirect('/')
 })
 
-app.get('/signup', function (req, res) {
-    res.sendFile('signup.html', {
-        root: __dirname + '/views'
-    });
-});
-
-app.get('/', function (req, res) {
-    if (!req.session.loggedIn)
-        res.sendFile('login.html', {
-            root: __dirname + '/views'
-        })
-    else
-        res.redirect("/topics")
-})
-
-app.get('/topics', function (req, res) {
-    res.sendFile('topics.html', {
-        root: __dirname + '/views'
-    })
-})
-
-app.get('/leaderboard', function (req, res) {
-    res.sendFile('leaderboard.html', {
-        root: __dirname + '/views'
-    });
-});
-
-app.get('/post', function (req, res) {
-    res.sendFile('post.html', {
-        root: __dirname + '/views'
-    })
-})
-
-app.get('/forgot', function (req, res) {
-    res.sendFile('forgot.html', {
-        root: __dirname + '/views'
-    })
-})
-
 app.post('/authPass', (req, res) => {
     db.collection('Users').findOne({'username': req.body.username}, function (err, result) {
         if (err) throw err;
 
         if (result != null && req.body.password == req.body.ConfirmPassword)
         {
+            if(req.body.password.length<=8){
+                res.render("forgot",{
+                    title:"Forgot Page",
+                    style: "login",
+                    var :"Password cannot be less than 8 Character"
+                    }); }
+                    else{
             db.collection('Users').updateOne({
                 username: result.username
             }, {
@@ -122,14 +136,24 @@ app.post('/authPass', (req, res) => {
                 }
             }, function (err, result) {
                 if (err) throw err;
-                res.send(`<script>alert('Updated');window.location='/'</script>`);
-            });
+                res.render("forgot",{
+                    title:"Forgot Page",
+                    style: "login",
+                    var :"Updated"
+                    });
+
+        });}
 
         } else {
-            res.send(`<script>alert('Username or Password do not match');window.location='/forgot'</script>`);
+            res.render("forgot",{
+                title:"Forgot Page",
+                style: "login",
+                var : "Username or password do not match"
+                });
         }
     })
 })
+
 
 app.post('/createpost', function (req, res) {
     let post = {
@@ -157,13 +181,13 @@ app.post('/createcomment', function (req, res) {
     db.collection('Topics').updateOne(
         {
         'posts._id': ObjectID(req.body.postid)
-        }, 
+        },
         {
-            $push: 
+            $push:
             {
                 'posts.$[el].comments': cmnt
             }
-        }, 
+        },
         {
             arrayFilters: [{ 'el._id': ObjectID(req.body.postid)}]
         },
@@ -209,7 +233,7 @@ app.get('/topusers', function (req, res) {
 app.get('/topposts', function (req, res) {
     let pipeline = [
         {
-            $match: 
+            $match:
             {
                 _id: ObjectID(req.query.topicid)
             }
@@ -218,9 +242,9 @@ app.get('/topposts', function (req, res) {
             $unwind: '$posts'
         },
         {
-            $addFields: 
+            $addFields:
             {
-                likes: 
+                likes:
                 {
                     $size: {
                         $ifNull: ['$posts.likes', []]
@@ -236,16 +260,16 @@ app.get('/topposts', function (req, res) {
             }
         },
         {
-            $group: 
+            $group:
             {
                 _id: '$_id',
-                name: 
+                name:
                 {
                     $first: '$name'
                 },
-                posts: 
+                posts:
                 {
-                    $push: 
+                    $push:
                     {
                         _id:'$posts._id',
                         content:'$posts.content'
@@ -270,19 +294,10 @@ app.get('/commentlist', function (req, res) {
     })
 })
 
-// app.put('/updatepost', function (req, res) {
-
-// })
-
-// app.delete('/deletepost', function (req, res) {
-//     db.collection()
-   
-// })
-
 app.get('/likes', function (req, res) {
     let pipeline = [
-        { 
-            $match: 
+        {
+            $match:
             {
                 'posts._id': ObjectID(req.query.postid)
             }
@@ -290,20 +305,20 @@ app.get('/likes', function (req, res) {
         {
             $unwind: '$posts'
         },
-        { 
-            $match: 
+        {
+            $match:
             {
                 'posts._id': ObjectID(req.query.postid)
             }
         },
         {
-            $project: 
-            {   
+            $project:
+            {
                 _id:0,
-                likes: 
+                likes:
                 {
-                    $size: 
-                    { 
+                    $size:
+                    {
                         $ifNull: [ '$posts.likes', [] ]
                     }
                 }
@@ -321,13 +336,13 @@ app.get('/updatelikes', function (req, res) {
     db.collection('Topics').updateOne(
         {
         'posts._id': ObjectID(req.query.postid)
-        }, 
+        },
         {
-            $addToSet: 
+            $addToSet:
             {
                 'posts.$[el].likes': req.session.username
             }
-        }, 
+        },
         {
             arrayFilters: [{ 'el._id': ObjectID(req.query.postid)}]
         },
@@ -336,7 +351,7 @@ app.get('/updatelikes', function (req, res) {
             if(result.result.nModified) res.sendStatus(200)
         }
     )
-})       
+})
 
 app.get('/deletetopic',function(req,res){
     db.collection('Topics').deleteOne({"_id" : ObjectID(req.query.topicid)},function(err,result){
@@ -371,9 +386,9 @@ app.get('/deletepost', (req, res)=> {
             'posts._id': ObjectID(req.query.postid)
         },
         {
-            '$pull': 
+            '$pull':
             {
-                posts: 
+                posts:
                 {
                     _id: ObjectID(req.query.postid)
                 }
@@ -400,10 +415,51 @@ app.post('/modifypost', (req,res) => {
     })     
 })
 
-app.get('/*', function (req, res) {
-    res.send('404 page Not Found')
+
+app.get('/',function(req,res){
+
+        res.render("login",{
+            title:"Login Page",
+            style: "login"
+            });
 })
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('app listening on port 3000!')
+app.get('/signup',function(req,res){
+    res.render("signup",{
+        title:"Signup Page",
+        style: "login"
+        });
 })
+app.get('/forgot',function(req,res){
+
+res.render("forgot",{
+    title:"Forgot Page",
+    style: "login"
+    });
+})
+
+app.get('/topics',function(req,res){
+    res.render("topics",{
+    title:"Topic Page",
+    style: "styles"
+    });})
+
+app.get('/leaderboard',function(req,res){
+    res.render("leaderboard",{
+    title:"LeaderBoard Page",
+    style: "styles"
+    });})
+
+app.get('/post',function(req,res){
+    res.render("post",{
+    title:"Post Page",
+    style: "styles"
+    });})
+
+
+    app.get('/*', function (req, res) {
+        res.send('404 page Not Found')
+    })
+
+app.set('port',3000);
+app.listen(app.get("port"));

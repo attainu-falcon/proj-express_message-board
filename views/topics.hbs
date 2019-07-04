@@ -41,14 +41,18 @@
                 a.textContent = topic.name
                 li.appendChild(a)
                 document.querySelector('.topics-container ul').appendChild(li)
-            }            
+            }
         }
         function addTopic() {
             let name = document.querySelector('.insert-topic').value
-            fetch('/addtopic?name=' + name)
-            .then(res=>res.json())
-            .then(result=>renderTopics(result))
-            .catch(err=>console.log(err))
+            if(name!=''){
+                fetch('/addtopic?name=' + name)
+                .then(res=>res.json())
+                .then(result=>renderTopics(result))
+                .catch(err=>console.log(err))
+            } else {
+                tinyToast.show("Type in a Topic name.").hide(2000)
+            }
         }
         function deleteTopic(){
             let name = document.querySelector('.insert-topic').value
@@ -74,4 +78,3 @@
         }
     </script>
 </body>
-</html>
