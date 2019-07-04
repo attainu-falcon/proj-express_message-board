@@ -1,0 +1,49 @@
+db.Topics.aggregate([
+        {
+            $match: 
+            {
+                _id: ObjectId('5d1311e66b4186f06c58c178')
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $addFields: 
+            {
+                likes: 
+                {
+                    $size: {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        },
+        {
+            $sort:
+            {
+                'likes': 1,
+                'posts._id': 1
+            }
+        },
+        {
+            $group: 
+            {
+                _id: '$_id',
+                name: 
+                {
+                    $first: '$name'
+                },
+                posts: 
+                {
+                    $push: 
+                    { 
+                        _id:'$posts._id',
+                        content:'$posts.content'
+                    }
+                }
+            }
+        }
+    ])
+
+
