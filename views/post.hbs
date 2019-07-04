@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/styles/styles.css">
-    <script src="/scripts/tiny-toast.js"></script>
-    <title>Post</title>
-</head>
-
-<body>
     <header class="post-container">
-     <button class="back" onclick="back()">></button>
+     <button class="back" onclick="back()"><</button>
         <textarea class="post-box" placeholder="post!"></textarea>
-        
+
         <div class="toolbar">
             <h2 class="topic-heading">★ <span class="likes"></span></h2>
             <button class="delete-button" onclick="deletepost()" >delete</button>
@@ -55,7 +43,6 @@
                     tinyToast.show("post is blank.!").hide(700)
             }
         })
-
         document.querySelector('.send-button').addEventListener('click', function () {
             var cmnt = document.querySelector('.insert-comment-box').innerText;
             let urlParams = new URLSearchParams(window.location.search)
@@ -75,7 +62,6 @@
             // .then(res=>res.text())
             .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
         })
-
         function renderCommentsCheck(status) {
             let urlParams = new URLSearchParams(window.location.search)
             if(status==200 && urlParams.has('postid')) {
@@ -97,7 +83,7 @@
                         document.querySelector('.comments-list').prepend(li)
                     }
                 }
-            }            
+            }
         }
 
         renderCommentsCheck(200)
@@ -126,15 +112,15 @@
                 }
             }).catch(err=>console.log(err))
         })
-            
-        
+
+
         fetch('/likes' + window.location.search)
             .then(res=>res.text()).then(result=> renderLikes(result)).catch(err=>console.log(err))
 
         function renderLikes(result) {
-            document.querySelector('.likes').innerText = result            
+            document.querySelector('.likes').innerText = result
         }
-        
+
 
         let urlParams = new URLSearchParams(window.location.search)
         if(!urlParams.has('postid')) {
@@ -142,7 +128,7 @@
             document.querySelector('.send-button').style.display = 'none'
             document.querySelector('.topic-heading').style.display = 'none'
         } else {
-            //document.querySelector('.post-button').innerText = 'Edit'
+            document.querySelector('.post-button').innerText = 'Edit'
             // document.querySelector('.post-button').style.visibility = 'hidden'
             document.querySelector('.post-box').readOnly = true
         }
@@ -151,19 +137,16 @@
             fetch('/deletepost'+ window.location.search)
             .then(res =>res.text())
             .then(function(res){
-                
+
                 if(res==1){
-                    
+
                     let urlParams = new URLSearchParams(window.location.search)
-                  
+
                     let id = urlParams.get('topicid')
                     window.location.replace('/leaderboard?topicid=' + id +window.location.hash )
                 }
             })
-            
+
         }
 
     </script>
-</body>
-
-</html>

@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="/styles/styles.css">
-        <title>Topics</title>
-    </head>
-    <body class="topics">
+  <body class="topics">
         <header class="bar"><h1 class="toolbar-heading">Topics</h1>
             <form action="/logout">
                 <button class="logout-button">Logout</button>
@@ -40,15 +31,18 @@
                 a.textContent = topic.name
                 li.appendChild(a)
                 document.querySelector('.topics-container ul').appendChild(li)
-            }            
+            }
         }
         function addTopic() {
             let name = document.querySelector('.insert-topic').value
-            fetch('/addtopic?name=' + name)
-            .then(res=>res.json())
-            .then(result=>renderTopics(result))
-            .catch(err=>console.log(err))
+            if(name!=''){
+                fetch('/addtopic?name=' + name)
+                .then(res=>res.json())
+                .then(result=>renderTopics(result))
+                .catch(err=>console.log(err))
+            } else {
+                tinyToast.show("Type in a Topic name.").hide(2000)
+            }
         }
     </script>
 </body>
-</html>

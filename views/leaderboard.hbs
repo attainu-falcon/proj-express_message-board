@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/styles/styles.css">
-    <title>Topics</title>
-</head>
 
 <body onhashchange="listPosts()">
     <header class="category-container">
@@ -38,32 +28,32 @@
                     fetch('/latestposts' + window.location.search)
                         .then(res => res.json())
                         .then(result => renderUI(result))
-                        .catch(err => console.log(err))                    
+                        .catch(err => console.log(err))
                     break;
 
                 case '#topposts':
                     fetch('/topposts' + window.location.search)
                         .then(res => res.json())
                         .then(result => renderUI(result))
-                        .catch(err => console.log(err))                    
+                        .catch(err => console.log(err))
                     break;
 
                 case '#topusers':
                     fetch('/topusers' + window.location.search)
                         .then(res => res.json())
                         .then(result => renderUI(result))
-                        .catch(err => console.log(err))                    
+                        .catch(err => console.log(err))
                     break;
-            
+
                 default:
                     fetch('/latestposts' + window.location.search)
                         .then(res => res.json())
                         .then(result => renderUI(result))
-                        .catch(err => console.log(err)) 
+                        .catch(err => console.log(err))
                     break;
             }
 
-            
+
             function renderUI(result) {
                 document.querySelector('.topic-heading').innerHTML = '#'+result.name
                 document.querySelector('.posts-container ul').innerHTML = ''
@@ -88,7 +78,6 @@
         document.querySelector('.post-button').addEventListener('click', function () {
             window.location.replace('post' + window.location.search)
         })
-
         function back() {
             // let urlParams = new URLSearchParams(window.location.search)
             // console.log(urlParams.has('post'))
@@ -97,5 +86,3 @@
         }
     </script>
 </body>
-
-</html>
