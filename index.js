@@ -33,16 +33,44 @@ app.post('/register', function (req, res) {
     db.collection('Users').findOne({$or: [{'username': req.body.username}, {'email': req.body.email}]}, function (err, result) {
         if (err) throw err
         if(result != null) {
-            req.session.signup=false;
-            res.redirect('/signup');
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"username or email id are already exist"
+                });
         }
         else
         {
+           if(req.body.username.length<=5){
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"username cannot be less than 5 Character"
+                });
+
+           }
+           else if(req.body.password.length<=8){
+            res.render("signup",{
+                title:"Signup Page",
+                style: "login",
+                var :"Password cannot be less than 8 Character"
+                });
+
+           }
+            else{
+
             db.collection('Users').insertOne(req.body, function (err, result) {
+
+
                 if (err) throw err
-                req.session.signup=true;
-            res.redirect('/signup');
+                res.render("login",{
+                    title:"Login Page",
+                    style: "login",
+                    var : "Acoount Created"
+                    });
             })
+        }
+
         }
     })
 })
@@ -54,7 +82,7 @@ app.post('/auth', (req, res) => {
         if (result != null) {
             if (req.body.password == result.password) {
                 req.session.loggedIn=true;
-                req.session.username=result.username;
+                req.session.username=req.body.username;
                 if (result.username == "yashpal") {
 
                     res.redirect('/topics')
@@ -65,11 +93,19 @@ app.post('/auth', (req, res) => {
             }
             else {
                 req.session.loggedIn=false;
-                res.redirect('/');
+                res.render("login",{
+                    title:"Login Page",
+                    style: "login",
+                    var :"Wrong UserName or Password"
+                    });
             }
         } else {
             req.session.loggedIn=false;
-                res.redirect('/');
+            res.render("login",{
+                title:"Login Page",
+                style: "login",
+                var :"Wrong UserName or Password"
+                });
         }
     })
 })
@@ -85,6 +121,13 @@ app.post('/authPass', (req, res) => {
 
         if (result != null && req.body.password == req.body.ConfirmPassword)
         {
+            if(req.body.password.length<=8){
+                res.render("forgot",{
+                    title:"Forgot Page",
+                    style: "login",
+                    var :"Password cannot be less than 8 Character"
+                    }); }
+                    else{
             db.collection('Users').updateOne({
                 username: result.username
             }, {
@@ -93,13 +136,20 @@ app.post('/authPass', (req, res) => {
                 }
             }, function (err, result) {
                 if (err) throw err;
-               req.session.forgot=true;
-               res.redirect('/forgot');
-            });
+                res.render("forgot",{
+                    title:"Forgot Page",
+                    style: "login",
+                    var :"Updated"
+                    });
+
+        });}
 
         } else {
-           req.session.forgot=false;
-           res.redirect('/forgot');
+            res.render("forgot",{
+                title:"Forgot Page",
+                style: "login",
+                var : "Username or password do not match"
+                });
         }
     })
 })
@@ -355,70 +405,27 @@ app.get('/deletepost', (req, res)=> {
 })
 
 app.get('/',function(req,res){
-    delete req.session.signup;
-    delete req.session.forgot;
-     if (req.session.loggedIn == true){
-        res.redirect("/topics")
-     }
-    else if(req.session.loggedIn == false) {
-        res.render("login",{
-            title:"Login Page",
-            style: "login",
-            var :"Wrong UserName or Password"
-            });}
-    else{
+
         res.render("login",{
             title:"Login Page",
             style: "login"
             });
-    }
 })
 
 app.get('/signup',function(req,res){
-delete req.session.loggedIn;
-if(req.session.signup ==true){
-    res.render("login",{
-        title:"Login Page",
-        style: "login",
-        var : "Success"
-        });
-}
-else if (req.session.signup ==false){
-    res.render("signup",{
-        title:"Signup Page",
-        style: "login",
-        var :"Failed"
-        });
-}
-else{
     res.render("signup",{
         title:"Signup Page",
         style: "login"
         });
-
-}
-
 })
 app.get('/forgot',function(req,res){
-delete req.session.loggedIn;
-if(req.session.forgot==true){
-    res.render("forgot",{
-        title:"Forgot Page",
-        style: "login",
-        var :"Updated"
-        });}
-else if(req.session.forgot==false){
+
 res.render("forgot",{
-title:"Forgot Page",
-style: "login",
-var : "Username or password do not match"
-});}
-else{
-    res.render("forgot",{
-        title:"Forgot Page",
-        style: "login"
-        }); }
-    })
+    title:"Forgot Page",
+    style: "login"
+    });
+})
+
 app.get('/topics',function(req,res){
     res.render("topics",{
     title:"Topic Page",
