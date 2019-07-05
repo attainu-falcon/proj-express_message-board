@@ -1,4 +1,4 @@
-  <body class="topics">
+  <body class="topics" onbeforeunload="unload()">
         <header class="bar"><h1 class="toolbar-heading">Hi, {{user}}</h1>
             <form action="/logout">
                 <button class="logout-button">Logout</button>
@@ -30,6 +30,7 @@
                 li.appendChild(a)
                 document.querySelector('.topics-container ul').appendChild(li)
             }
+            document.getElementById('loading').style.display = 'none'
         }
         function addTopic() {
             let name = document.querySelector('.insert-topic').value
@@ -98,6 +99,6 @@
             document.querySelector('.modify-button').removeEventListener('click', confirmModify)
             document.querySelector('.modify-button').addEventListener('click', modifyTopic)
         }
-
+        function unload() { document.getElementById('loading').style.display = 'block'}
     </script>
 </body>
