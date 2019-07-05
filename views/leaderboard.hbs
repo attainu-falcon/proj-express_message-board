@@ -1,8 +1,14 @@
 
 <body onhashchange="listPosts()">
     <header class="category-container">
-        <form action="/topics"><button class="back" onclick="back()">
-                <</button> </form> <ul>
+
+        <form action="/topics" method="GET">
+        <button class="back" onclick="back()">
+
+                <</button>
+                 </form>
+
+                <ul>
                     <li><a class="sort" href="#latestposts">Latest</a></li>
                     <!--
          -->
@@ -91,7 +97,7 @@
 
         document.querySelector('.post-button').addEventListener('click', function () {
             window.location.replace('post' + window.location.search)
-            
+
         })
         function back() {
             // let urlParams = new URLSearchParams(window.location.search)

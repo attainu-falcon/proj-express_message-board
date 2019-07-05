@@ -88,10 +88,10 @@ app.post('/auth', (req, res) => {
                 req.session.loggedIn = true;
                 req.session.username = req.body.username;
                 if (result.username == "yashpal") {
-
+                    req.session.Admin = true;
                     res.redirect('/topics')
                 } else {
-
+                    req.session.Admin = false;
                     res.redirect('/topics')
                 }
             } else {
@@ -233,10 +233,8 @@ app.get('/latestposts', function (req, res) {
 })
 
 app.get('/topusers', function (req, res) {
-    let pipeline = [
-        {
-            $match: 
-            {
+    let pipeline = [{
+            $match: {
                 _id: ObjectID(req.query.topicid)
             }
         },
@@ -244,23 +242,18 @@ app.get('/topusers', function (req, res) {
             $unwind: '$posts'
         },
         {
-            $addFields: 
-            {
-                likes: 
-                {
-                    $size: 
-                    {
+            $addFields: {
+                likes: {
+                    $size: {
                         $ifNull: ['$posts.likes', []]
                     }
                 }
             }
         },
         {
-            $group: 
-            {
+            $group: {
                 _id: '$posts.username',
-                userLikes: 
-                {
+                userLikes: {
                     $sum: '$likes'
                 },
                 name: {
@@ -269,8 +262,7 @@ app.get('/topusers', function (req, res) {
             }
         },
         {
-            $sort: 
-            {
+            $sort: {
                 'userLikes': -1
             }
         }
@@ -398,12 +390,6 @@ app.get('/deletetopic', function (req, res) {
     db.collection('Topics').deleteOne({
         "_id": ObjectID(req.query.topicid)
     }, function (err, result) {
-        console.log(result.result.n)
-
-        //if(err) throw err; 
-        //console.log(result)
-        // res.send(result.result.nModified.toString())
-        //console.log(result)
         res.send(result.result.n.toString())
 
     })
@@ -463,28 +449,44 @@ app.get('/forgot', function (req, res) {
         style: "login"
     });
 })
-app.post('/modifypost', (req, res) => {
-    console.log(req.body)
+app.get('/modifytopic', (req, res) => {
     db.collection('Topics').updateOne({
-        "posts._id": ObjectID(req.body.id)
+        _id: ObjectID(req.query.topicid)
     }, {
         '$set': {
-            "posts.$.content": req.body.post
-
+            name: req.query.newname
         }
 
     }, function (err, result) {
-
+        console.log(result.result)
         res.send(result.result.nModified.toString())
 
     })
+
 })
 
 app.get('/topics', function (req, res) {
-    res.render("topics", {
-        title: "Topic Page",
-        style: "styles"
-    });
+    if (req.session.Admin == true) {
+
+        res.render("topics.hbs", {
+            title: "Topic Page",
+            style: "styles",
+            flag: true
+
+        });
+
+    } else if (req.session.Admin == false) {
+        res.render("topics.hbs", {
+            title: "Topic Page",
+            style: "styles",
+            flag: false
+        });
+    } else {
+        res.render("topics.hbs", {
+            title: "Topic Page",
+            style: "styles"
+        });
+    }
 })
 
 app.get('/leaderboard', function (req, res) {

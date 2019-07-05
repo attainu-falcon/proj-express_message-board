@@ -5,20 +5,18 @@
             </form>
         </header>
         <main class="topics-container">
-            <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
+            {{#if flag}}
+               <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
             <button class="active-button" onclick="addTopic()">+</button>
             <button class="remove-button" onclick="deleteTopic()">-</button>
-            <button class="active-button">Modify</button>
+            <button class="modify-button">Modify</button>
             <ul>
-                <!-- <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
-                <li>React</li>
-                <li>Angular</li>
-                <li>MongoDB</li>
-                <li>Redux</li>
-                <li>Heroku</li>
-                <li>Handlebars</li>
-                <li>CSS</li> -->
             </ul>
+            {{else}}
+            <ul>
+            </ul>
+            {{/if}}
+
     </main>
     <script>
         fetch('/listtopics').then(res=>res.json()).then(result=>renderTopics(result)).catch(err=>console.log(err))
@@ -52,19 +50,56 @@
                     let urlParams = new URLSearchParams(url.search)
                     let id = urlParams.get('topicid')
                     //console.log(id)
-                  
+
                     fetch('/deletetopic?topicid=' + id )
                     .then(res =>res.text())
                     .then(function(res){
                         if(res==1){
-                            element.parentElement.remove() 
+                            element.parentElement.remove()
                             tinyToast.show("topic deleted").hide(2000)
-                           
+
                         }
                     })
                 }
             })
-
         }
+        document.querySelector('.modify-button').addEventListener('click', modifyTopic)
+
+        function modifyTopic(){
+            let name = document.querySelector('.insert-topic').value
+            document.querySelectorAll('.topics-container ul li a').forEach(function(element,index){
+                if(element.textContent==name){
+                    let url = new URL(element.href)
+                    let urlParams = new URLSearchParams(url.search)
+                    let id = urlParams.get('topicid')
+                    element.parentElement.style.border = "4px solid coral"
+                    document.querySelector('.insert-topic').value = ''
+                    document.querySelector('.insert-topic').placeholder = 'Enter New Name!'
+                    document.querySelector('.modify-button').textContent = 'Confirm!'
+                    document.querySelector('.modify-button').removeEventListener('click', modifyTopic)
+                    document.querySelector('.modify-button').addEventListener('click', confirmModify.bind(null,element, id))
+
+                }
+            })
+        }
+
+        function confirmModify(element,id){
+            let name = document.querySelector('.insert-topic').value
+            fetch('/modifytopic?topicid=' + id + '&newname=' + name)
+            .then(res =>res.text())
+            .then(function(res){
+                if(res==1){
+                    element.textContent = name
+                    element.parentElement.style.border = 'none'
+                    tinyToast.show("topic renamed!").hide(2000)
+                    document.querySelector('.insert-topic').value = ''
+                    document.querySelector('.insert-topic').placeholder = 'Type in a topic.'
+                    document.querySelector('.modify-button').textContent = 'Modify'
+                }
+            })
+            document.querySelector('.modify-button').removeEventListener('click', confirmModify)
+            document.querySelector('.modify-button').addEventListener('click', modifyTopic)
+        }
+
     </script>
 </body>
