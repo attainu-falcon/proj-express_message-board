@@ -4,9 +4,9 @@ const session = require('express-session')
 const mongoClient = require('mongodb').MongoClient
 const ObjectID = require('mongodb').ObjectID
 var hbs=require("express-handlebars");
-var favicons = require('serve-favicons')
+//var favicons = require('serve-favicons')
 app.use(express.static('public'))
-app.use(favicon(__dirname + '/public/favicon.ico'))
+//app.use(favicon(__dirname + '/public/favicon.ico'))
 app.use(express.urlencoded())
 var url
 if (process.env.DB_URL) {
