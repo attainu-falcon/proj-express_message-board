@@ -78,15 +78,18 @@ app.post('/register', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-
+    if (!req.session.username) {
+        req.session.username = req.body.username
+        req.session.password = req.body.password
+    }
     db.collection('Users').findOne({
-        "username": req.body.username
+        "username": req.session.username
     }, function (err, result) {
         if (err) throw err;
         if (result != null) {
             if (req.body.password == result.password) {
                 req.session.loggedIn = true;
-                req.session.username = req.body.username;
+                req.session.username = req.body.username
                 if (result.username == "admin") {
                     req.session.Admin = true;
                     res.redirect('/topics')
@@ -427,11 +430,14 @@ app.get('/deletepost', (req, res) => {
 })
 
 app.get('/', function (req, res) {
-
-    res.render("login", {
-        title: "Login Page",
-        style: "login"
-    });
+    if (!req.session.loggedIn) {
+        res.render("login", {
+            title: "Login Page",
+            style: "login"
+        });
+    } else {
+        res.redirect('/topics')
+    }
 })
 
 app.get('/signup', function (req, res) {
