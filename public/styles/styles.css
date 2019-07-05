@@ -30,7 +30,7 @@ padding: 50px;
 border-top-left-radius: 50px;
 box-shadow: 0px 0px 20px 10px rgb(255, 161, 72);
 }
-.active-button, .add-button, .remove-button, .modify-button, .confirm-button {
+.active-button,.remove-button,.modify-button {
   padding: 20px 50px 20px 50px;
   border: 0;
   border-radius: 999px;
@@ -67,7 +67,7 @@ position: absolute;
 margin-top:20px;
 left: 10%;
 }
-.post-button {
+.post-button,.edit-button, .update-button {
 border: 10px solid var(--primary-color);
 border-radius: 999px;
 background-color: var(--primary-color);
@@ -87,6 +87,7 @@ right: calc(10% + 80px);
 outline: none;
 margin: 10px;
 }
+
 .send-button {
 border: 10px solid var(--primary-color);
 border-radius: 999px;
@@ -159,6 +160,11 @@ margin: 10px;
 }
 
 .insert-comment-box:empty:not(:focus):before {
+content: attr(data-placeholder);
+color: grey;
+}
+
+.post-box:empty:not(:focus):before {
 content: attr(data-placeholder);
 color: grey;
 }
