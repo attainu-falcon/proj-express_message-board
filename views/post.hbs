@@ -60,8 +60,7 @@
                 postid
             })
         })
-        
-            .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
+        .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
     })
     function renderCommentsCheck(status) {
         let urlParams = new URLSearchParams(window.location.search)
@@ -73,6 +72,7 @@
                 .then(result => renderComments(result))
                 .catch(err => console.log(err))
             function renderComments(result) {
+                document.querySelector('.insert-comment-box').innerText = ''
                 document.querySelector('.comments-list').innerHTML = ''
                 for (const cmnt of result) {
                     let li = document.createElement('li')

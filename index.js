@@ -87,7 +87,7 @@ app.post('/auth', (req, res) => {
             if (req.body.password == result.password) {
                 req.session.loggedIn = true;
                 req.session.username = req.body.username;
-                if (result.username == "yashpal") {
+                if (result.username == "admin") {
                     req.session.Admin = true;
                     res.redirect('/topics')
                 } else {
@@ -268,7 +268,6 @@ app.get('/topusers', function (req, res) {
         }
     ]
     db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
-        console.log(result)
         res.send(result)
     })
 })
@@ -423,7 +422,6 @@ app.get('/deletepost', (req, res) => {
             }
         }
     }, function (err, result) {
-        //console.log(result.result.nModified.toString())
         res.send(result.result.nModified.toString())
     })
 })
@@ -458,7 +456,6 @@ app.get('/modifytopic', (req, res) => {
         }
 
     }, function (err, result) {
-        console.log(result.result)
         res.send(result.result.nModified.toString())
 
     })
@@ -471,6 +468,7 @@ app.get('/topics', function (req, res) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
+            user: req.session.username,
             flag: true
 
         });
@@ -479,6 +477,7 @@ app.get('/topics', function (req, res) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
+            user: req.session.username,
             flag: false
         });
     } else {

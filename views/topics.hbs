@@ -1,13 +1,13 @@
   <body class="topics">
-        <header class="bar"><h1 class="toolbar-heading">Topics</h1>
+        <header class="bar"><h1 class="toolbar-heading">Hi, {{user}}</h1>
             <form action="/logout">
                 <button class="logout-button">Logout</button>
             </form>
         </header>
         <main class="topics-container">
             {{#if flag}}
-               <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
-            <button class="active-button" onclick="addTopic()">+</button>
+               <input type="text" placeholder="Type in a discussion topic." class="insert-topic"><br>
+            <button class="add-button" onclick="addTopic()">+</button>
             <button class="remove-button" onclick="deleteTopic()">-</button>
             <button class="modify-button">Modify</button>
             <ul>
@@ -49,8 +49,6 @@
                     let url = new URL(element.href)
                     let urlParams = new URLSearchParams(url.search)
                     let id = urlParams.get('topicid')
-                    //console.log(id)
-
                     fetch('/deletetopic?topicid=' + id )
                     .then(res =>res.text())
                     .then(function(res){
@@ -93,7 +91,7 @@
                     element.parentElement.style.border = 'none'
                     tinyToast.show("topic renamed!").hide(2000)
                     document.querySelector('.insert-topic').value = ''
-                    document.querySelector('.insert-topic').placeholder = 'Type in a topic.'
+                    document.querySelector('.insert-topic').placeholder = 'Type in a dscussion topic.'
                     document.querySelector('.modify-button').textContent = 'Modify'
                 }
             })
