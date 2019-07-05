@@ -1,17 +1,15 @@
 <body onbeforeunload="unload()">
     <header class="post-container">
-        <button class="back" onclick="back()">
-            <</button> <div class="post-box" data-placeholder="Share your thoughts!">
-                </div>
+        <button class="back" onclick="back()"><</button>
+        <div class="post-box" data-placeholder="Share your thoughts!"></div>
+        <div class="toolbar">
+            <h2 class="topic-heading">★ <span class="likes"></span></h2>
+            <button class="delete-button" onclick="deletepost()">delete</button>
+            <button class="post-button">Post</button>
+            <button class="edit-button" onclick="editPost()">Edit</button>
+            <button class="update-button" onclick="updatePost()" style="display: none">Update</button>
 
-                <div class="toolbar">
-                    <h2 class="topic-heading">★ <span class="likes"></span></h2>
-                    <button class="delete-button" onclick="deletepost()">delete</button>
-                    <button class="post-button">Post</button>
-                    <button class="edit-button" onclick="editPost()">Edit</button>
-                    <button class="update-button" onclick="updatePost()" style="display: none">Update</button>
-
-                </div>
+        </div>
     </header>
     <main class="comments-container">
         <div class="insert-comment-box" contenteditable="true" data-placeholder="Enter comment."></div>
@@ -91,6 +89,7 @@
                     document.getElementById('loading').style.display = 'none'
                 }
             }
+            document.getElementById('loading').style.display = 'none'
         }
 
         renderCommentsCheck(200)

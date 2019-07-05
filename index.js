@@ -68,7 +68,7 @@ app.post('/register', function (req, res) {
                     res.render("login", {
                         title: "Login Page",
                         style: "login",
-                        var: "Acoount Created"
+                        var: "Account Created"
                     });
                 })
             }
