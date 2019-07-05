@@ -7,7 +7,7 @@
         <main class="topics-container">
             <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
             <button class="active-button" onclick="addTopic()">+</button>
-            <button class="active-button">-</button>
+            <button class="remove-button" onclick="deleteTopic()">-</button>
             <button class="active-button">Modify</button>
             <ul>
                 <!-- <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
@@ -43,6 +43,28 @@
             } else {
                 tinyToast.show("Type in a Topic name.").hide(2000)
             }
+        }
+        function deleteTopic(){
+            let name = document.querySelector('.insert-topic').value
+            document.querySelectorAll('.topics-container ul li a').forEach(function(element,index){
+                if(element.textContent==name){
+                    let url = new URL(element.href)
+                    let urlParams = new URLSearchParams(url.search)
+                    let id = urlParams.get('topicid')
+                    //console.log(id)
+                  
+                    fetch('/deletetopic?topicid=' + id )
+                    .then(res =>res.text())
+                    .then(function(res){
+                        if(res==1){
+                            element.parentElement.remove() 
+                            tinyToast.show("topic deleted").hide(2000)
+                           
+                        }
+                    })
+                }
+            })
+
         }
     </script>
 </body>

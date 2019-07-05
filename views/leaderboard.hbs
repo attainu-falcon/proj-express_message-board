@@ -41,7 +41,7 @@
                 case '#topusers':
                     fetch('/topusers' + window.location.search)
                         .then(res => res.json())
-                        .then(result => renderUI(result))
+                        .then(result => renderUIusers(result))
                         .catch(err => console.log(err))
                     break;
 
@@ -60,10 +60,24 @@
                 for (post of result.posts) {
                     let li = document.createElement('li')
                     let a = document.createElement('a')
+                    let b = document.createElement('b')
                     a.textContent = post.content
                     a.setAttribute('onclick', 'postClick("' + post._id + '")')
+                    b.textContent = post.username + ' '
+                    a.prepend(b)
                     li.appendChild(a)
                     document.querySelector('.posts-container ul').prepend(li)
+                }
+            }
+            function renderUIusers(result) {
+                document.querySelector('.topic-heading').innerHTML = '#'+result[0].name
+                document.querySelector('.posts-container ul').innerHTML = ''
+                for (post of result) {
+                    let li = document.createElement('li')
+                    let b = document.createElement('b')
+                    b.textContent = post._id
+                    li.appendChild(b)
+                    document.querySelector('.posts-container ul').appendChild(li)
                 }
             }
         }
@@ -77,6 +91,7 @@
 
         document.querySelector('.post-button').addEventListener('click', function () {
             window.location.replace('post' + window.location.search)
+            
         })
         function back() {
             // let urlParams = new URLSearchParams(window.location.search)
