@@ -41,7 +41,7 @@
                 case '#topusers':
                     fetch('/topusers' + window.location.search)
                         .then(res => res.json())
-                        .then(result => renderUI(result))
+                        .then(result => renderUIusers(result))
                         .catch(err => console.log(err))
                     break;
 
@@ -67,6 +67,17 @@
                     a.prepend(b)
                     li.appendChild(a)
                     document.querySelector('.posts-container ul').prepend(li)
+                }
+            }
+            function renderUIusers(result) {
+                document.querySelector('.topic-heading').innerHTML = '#'+result[0].name
+                document.querySelector('.posts-container ul').innerHTML = ''
+                for (post of result) {
+                    let li = document.createElement('li')
+                    let b = document.createElement('b')
+                    b.textContent = post._id
+                    li.appendChild(b)
+                    document.querySelector('.posts-container ul').appendChild(li)
                 }
             }
         }
