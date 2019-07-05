@@ -7,7 +7,8 @@
     font-size: 24px;
 }
 body {
-    background-color: var(--primary-color);
+    background: var(--primary-color) url('bg.png');
+    background-blend-mode: hard-light;
     color: white;
     margin: 0;
 }
