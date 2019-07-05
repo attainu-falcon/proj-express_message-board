@@ -87,9 +87,8 @@ app.post('/auth', (req, res) => {
     }, function (err, result) {
         if (err) throw err;
         if (result != null) {
-            if (req.body.password == result.password) {
-                req.session.loggedIn = true;
-                req.session.username = req.body.username
+            if (req.session.password == result.password) {
+                req.session.loggedIn = true
                 if (result.username == "admin") {
                     req.session.Admin = true;
                     res.redirect('/topics')
