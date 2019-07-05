@@ -155,7 +155,8 @@
 
     function editPost() {
         document.querySelector('.post-box span').contentEditable = true
-        document.querySelector('.post-box span').fo
+        document.querySelector('.post-box span').focus()
+        document.querySelector('.post-box span').select()
         document.querySelector('.edit-button').style.display = 'none'
         document.querySelector('.update-button').style.display = 'inline'
         document.querySelector('.delete-button').style.right = "calc(10% + 110px)"
