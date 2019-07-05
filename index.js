@@ -233,55 +233,97 @@ res.send(result[0])
 })
 
 app.get('/topusers', function (req, res) {
-db.collection('Topics').find({
-'_id': ObjectID(req.query.topicid)
-}).toArray(function (err, result) {
-res.send(result[0])
-})
+    let pipeline = [
+        {
+            $match:
+            {
+                _id: ObjectID(req.query.topicid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $addFields:
+            {
+                likes:
+                {
+                    $size:
+                    {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        },
+        {
+            $group:
+            {
+                _id: '$posts.username',
+                userLikes:
+                {
+                    $sum: '$likes'
+                },
+                name: {
+                    $first: '$name'
+                }
+            }
+        },
+        {
+            $sort:
+            {
+                'userLikes': -1
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        console.log(result)
+        res.send(result)
+    })
 })
 
 app.get('/topposts', function (req, res) {
-let pipeline = [{
-$match: {
-_id: ObjectID(req.query.topicid)
-}
-},
-{
-$unwind: '$posts'
-},
-{
-$addFields: {
-likes: {
-$size: {
-$ifNull: ['$posts.likes', []]
-}
-}
-}
-},
-{
-$sort: {
-'likes': 1,
-'posts._id': 1
-}
-},
-{
-$group: {
-_id: '$_id',
-name: {
-$first: '$name'
-},
-posts: {
-$push: {
-_id: '$posts._id',
-content: '$posts.content'
-}
-}
-}
-}
-]
-db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
-res.send(result[0])
-})
+    let pipeline = [{
+            $match: {
+                _id: ObjectID(req.query.topicid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $addFields: {
+                likes: {
+                    $size: {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        },
+        {
+            $sort: {
+                'likes': 1,
+                'posts._id': 1
+            }
+        },
+        {
+            $group: {
+                _id: '$_id',
+                name: {
+                    $first: '$name'
+                },
+                posts: {
+                    $push: {
+                        _id: '$posts._id',
+                        username: '$posts.username',
+                        content: '$posts.content'
+                    }
+                }
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        res.send(result[0])
+    })
 })
 
 app.get('/commentlist', function (req, res) {
