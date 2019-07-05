@@ -98,19 +98,11 @@ app.post('/auth', (req, res) => {
                 }
             } else {
                 req.session.loggedIn = false;
-                res.render("login", {
-                    title: "Login Page",
-                    style: "login",
-                    var: "Wrong UserName or Password"
-                });
+                res.redirect('/')
             }
         } else {
             req.session.loggedIn = false;
-            res.render("login", {
-                title: "Login Page",
-                style: "login",
-                var: "Wrong UserName or Password"
-            });
+            res.redirect('/')
         }
     })
 })
@@ -392,7 +384,6 @@ app.get('/deletetopic', function (req, res) {
         "_id": ObjectID(req.query.topicid)
     }, function (err, result) {
         res.send(result.result.n.toString())
-
     })
 })
 
@@ -429,10 +420,16 @@ app.get('/deletepost', (req, res) => {
 })
 
 app.get('/', function (req, res) {
-    if (!req.session.loggedIn) {
+    if (!req.session.loggedIn && !req.session.username) {
         res.render("login", {
             title: "Login Page",
             style: "login"
+        });
+    } else if(!req.session.loggedIn){
+        res.render("login", {
+            title: "Login Page",
+            style: "login",
+            var: "Username or password do not match"
         });
     } else {
         res.redirect('/topics')
