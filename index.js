@@ -78,9 +78,14 @@ app.post('/register', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    if (!req.session.username && req.body.password) {
+    if (!req.session.username && !req.session.password) {
         req.session.username = req.body.username
         req.session.password = req.body.password
+    } else {
+        if(req.session.password != req.body.password) {
+            req.session.username = req.body.username
+            req.session.password = req.body.password   
+        }
     }
     db.collection('Users').findOne({
         "username": req.session.username
