@@ -60,8 +60,11 @@
                 for (post of result.posts) {
                     let li = document.createElement('li')
                     let a = document.createElement('a')
+                    let b = document.createElement('b')
                     a.textContent = post.content
                     a.setAttribute('onclick', 'postClick("' + post._id + '")')
+                    b.textContent = post.username + ' '
+                    a.prepend(b)
                     li.appendChild(a)
                     document.querySelector('.posts-container ul').prepend(li)
                 }

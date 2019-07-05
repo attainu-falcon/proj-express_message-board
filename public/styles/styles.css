@@ -164,6 +164,11 @@ content: attr(data-placeholder);
 color: grey;
 }
 
+.post-box:empty:not(:focus):before {
+content: attr(data-placeholder);
+color: grey;
+}
+
 .comment-box {
 resize:none;
 outline: none;
