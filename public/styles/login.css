@@ -6,12 +6,35 @@
     font-family: sans-serif;
     font-size: 24px;
 }
-body {
+
+@keyframes fadeInBG {
+    0% {
+        background: rgb(255, 181, 111);
+    }
+    100% {
+        background: rgba(255, 181, 111, 0);
+    }
+}
+
+body::before {
+    content: "";
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    animation: 3s ease-in-out 3s 1 fadeInBG;
+    animation-fill-mode: forwards;
+    background: var(--primary-color);
+}
+
+body { 
     background: var(--primary-color) url('bg.png');
     background-blend-mode: hard-light;
     color: white;
     margin: 0;
 }
+
 input , input:focus{
     border: none;
     background-color: transparent;
