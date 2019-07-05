@@ -438,17 +438,22 @@ app.get('/', function (req, res) {
 })
 
 app.get('/signup', function (req, res) {
+    if (!req.session.loggedIn) {
     res.render("signup", {
         title: "Signup Page",
         style: "login"
-    });
+    })} else {
+        res.redirect('/topics')
+    }
 })
 app.get('/forgot', function (req, res) {
-
+    if (!req.session.loggedIn) {
     res.render("forgot", {
         title: "Forgot Page",
         style: "login"
-    });
+    });} else {
+        res.redirect('/topics')
+    }
 })
 app.get('/modifytopic', (req, res) => {
     db.collection('Topics').updateOne({
