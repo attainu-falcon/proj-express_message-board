@@ -464,8 +464,6 @@ app.get('/post',function(req,res){
         
     })
 
-//app.set('port',3000);
-//app.listen(app.get("port"));
 app.listen(process.env.PORT || 3000, function () {
     console.log('app listening on port 3000!')
 })
