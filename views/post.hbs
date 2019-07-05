@@ -89,7 +89,6 @@
                     document.getElementById('loading').style.display = 'none'
                 }
             }
-            document.getElementById('loading').style.display = 'none'
         }
 
         renderCommentsCheck(200)
@@ -127,18 +126,6 @@
         }
 
 
-        let urlParams = new URLSearchParams(window.location.search)
-        if (!urlParams.has('postid')) {
-            document.querySelector('.insert-comment-box').style.display = 'none'
-            document.querySelector('.send-button').style.display = 'none'
-            document.querySelector('.topic-heading').style.display = 'none'
-            document.querySelector('.edit-button').style.display = 'none'
-            document.querySelector('.delete-button').style.display = 'none'
-            document.querySelector('.post-box').contentEditable = true
-        } else {
-            document.querySelector('.post-button').innerText = 'Edit'
-            document.querySelector('.post-button').style.display = 'none'
-        }
 
         function deletepost() {
             fetch('/deletepost' + window.location.search)
@@ -190,6 +177,21 @@
                     }
                 })
         }
+        
+        let urlParams = new URLSearchParams(window.location.search)
+        if (!urlParams.has('postid')) {
+            document.querySelector('.insert-comment-box').style.display = 'none'
+            document.querySelector('.send-button').style.display = 'none'
+            document.querySelector('.topic-heading').style.display = 'none'
+            document.querySelector('.edit-button').style.display = 'none'
+            document.querySelector('.delete-button').style.display = 'none'
+            document.querySelector('.post-box').contentEditable = true
+            document.getElementById('loading').style.display = 'none'
+        } else {
+            document.querySelector('.post-button').innerText = 'Edit'
+            document.querySelector('.post-button').style.display = 'none'
+        }
+
         function unload() { document.getElementById('loading').style.display = 'block' }
     </script>
 </body>
