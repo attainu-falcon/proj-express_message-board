@@ -426,6 +426,7 @@ app.get('/', function (req, res) {
             style: "login"
         });
     } else if(!req.session.loggedIn){
+        req.session.destroy()
         res.render("login", {
             title: "Login Page",
             style: "login",
