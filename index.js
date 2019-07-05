@@ -78,7 +78,7 @@ app.post('/register', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    if (!req.session.username) {
+    if (!req.session.username && req.body.password) {
         req.session.username = req.body.username
         req.session.password = req.body.password
     }
@@ -97,10 +97,12 @@ app.post('/auth', (req, res) => {
                     res.redirect('/topics')
                 }
             } else {
+                req.session.username = req.body.username
                 req.session.loggedIn = false;
                 res.redirect('/')
             }
         } else {
+            req.session.username = req.body.username
             req.session.loggedIn = false;
             res.redirect('/')
         }
