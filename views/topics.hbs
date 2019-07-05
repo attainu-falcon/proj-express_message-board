@@ -6,9 +6,9 @@
         </header>
         <main class="topics-container">
             <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
-            <button class="active-button" onclick="addTopic()">+</button>
-            <button class="active-button">-</button>
-            <button class="active-button">Modify</button>
+            <button class="add-button" onclick="addTopic()">+</button>
+            <button class="remove-button">-</button>
+            <button class="modify-button">Modify</button>
             <ul>
                 <!-- <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
                 <li>React</li>
@@ -43,6 +43,33 @@
             } else {
                 tinyToast.show("Type in a Topic name.").hide(2000)
             }
+        }
+
+
+        document.querySelector('.modify-button').addEventListener('click', function(evt){
+            let name = document.querySelector('.insert-topic')
+            let found = false
+            document.querySelectorAll('.topics-container li').forEach(function(elem, index){
+                if(elem.textContent==name.value){
+                    found = true
+                    elem.style.border = "4px solid red"
+                    name.value = ''
+                    name.placeholder = "Enter new topic name"
+                    document.querySelector('.modify-button').textContent = "Confirm!"
+                    document.querySelector('.modify-button').addEventListener('click', confirmUpdate.bind(this))
+                }
+            })
+            if(!found){
+                tinyToast.show("not found!").hide(2000)
+            }
+        })
+
+        function confirmUpdate(elem){
+            console.log(elem.href)
+            {{!-- let urlParams = new URLSearchParams(window.location.search)
+            let id = urlParams.get('topicid')
+            db.collection('/updatetopic') --}}
+            {{!-- document.querySelector('.modify-button').addEventListener('click', confirmAction) --}}
         }
     </script>
 </body>
