@@ -5,21 +5,18 @@
             </form>
         </header>
         <main class="topics-container">
+            {{#if flag}}
                <input type="text" placeholder="Type in a topic." class="insert-topic"><br>
             <button class="active-button" onclick="addTopic()">+</button>
             <button class="remove-button" onclick="deleteTopic()">-</button>
             <button class="modify-button">Modify</button>
-
             <ul>
-                <!-- <li><a href="/leaderboard?topicid=5d1311e66b4186f06c58c178#latestposts">Jquery</a></li>
-                <li>React</li>
-                <li>Angular</li>
-                <li>MongoDB</li>
-                <li>Redux</li>
-                <li>Heroku</li>
-                <li>Handlebars</li>
-                <li>CSS</li> -->
             </ul>
+            {{else}}
+            <ul>
+            </ul>
+            {{/if}}
+
     </main>
     <script>
         fetch('/listtopics').then(res=>res.json()).then(result=>renderTopics(result)).catch(err=>console.log(err))
