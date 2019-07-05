@@ -1,4 +1,6 @@
-  <div>
+<body onbeforeunload="unload()">
+    <div>
+
         <form action="/" method="GET">
             <button class="signup">Login</button>
         </form>
@@ -18,3 +20,7 @@
         </form>
 
     </div>
+    <script>
+        function unload() { document.getElementById('loading').style.display = 'block' }
+    </script>
+</body>
