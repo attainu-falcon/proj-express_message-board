@@ -163,7 +163,6 @@ h2 {
 
 .posts-container li {
   cursor: pointer;
-  white-space: nowrap;
   list-style: none;
   padding: 20px 50px 20px 50px;
   margin: 10px;
