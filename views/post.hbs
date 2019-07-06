@@ -70,7 +70,7 @@
                 fetch('/commentlist?topicid=' + topicid + '&postid=' + postid)
                     .then(res => res.json())
                     .then(result => renderComments(result))
-                    .catch(err => console.log(err))
+                    .catch(err => document.getElementById('loading').style.display = 'none')
                 function renderComments(result) {
                     document.querySelector('.insert-comment-box').innerText = ''
                     document.querySelector('.comments-list').innerHTML = ''
