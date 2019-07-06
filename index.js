@@ -503,16 +503,13 @@ app.get('/topics', function (req, res) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
-            user: req.session.username,
             flag: true
-
         });
 
     } else if (req.session.Admin == false) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
-            user: req.session.username,
             flag: false
         });
     } else {
