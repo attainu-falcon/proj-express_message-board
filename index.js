@@ -82,9 +82,9 @@ app.post('/auth', (req, res) => {
         req.session.username = req.body.username
         req.session.password = req.body.password
     } else {
-        if(req.session.password != req.body.password) {
+        if (req.session.password != req.body.password) {
             req.session.username = req.body.username
-            req.session.password = req.body.password   
+            req.session.password = req.body.password
         }
     }
     db.collection('Users').findOne({
@@ -427,19 +427,20 @@ app.get('/deletepost', (req, res) => {
 })
 
 
-app.post('/modifypost', (req,res) => {
-    console.log(req.body)
-    db.collection('Topics').updateOne({"posts._id":ObjectID(req.body.id)},{
-       '$set':{
-                "posts.$.content": req.body.post 
-            
-            }
+app.post('/modifypost', (req, res) => {
+    db.collection('Topics').updateOne({
+        "posts._id": ObjectID(req.body.id)
+    }, {
+        '$set': {
+            "posts.$.content": req.body.post
 
-    },function(err,result){
-        
+        }
+
+    }, function (err, result) {
+
         res.send(result.result.nModified.toString())
-        
-    })     
+
+    })
 })
 
 
@@ -449,7 +450,7 @@ app.get('/', function (req, res) {
             title: "Login Page",
             style: "login"
         });
-    } else if(!req.session.loggedIn){
+    } else if (!req.session.loggedIn) {
         req.session.destroy()
         res.render("login", {
             title: "Login Page",
@@ -463,19 +464,21 @@ app.get('/', function (req, res) {
 
 app.get('/signup', function (req, res) {
     if (!req.session.loggedIn) {
-    res.render("signup", {
-        title: "Signup Page",
-        style: "login"
-    })} else {
+        res.render("signup", {
+            title: "Signup Page",
+            style: "login"
+        })
+    } else {
         res.redirect('/topics')
     }
 })
 app.get('/forgot', function (req, res) {
     if (!req.session.loggedIn) {
-    res.render("forgot", {
-        title: "Forgot Page",
-        style: "login"
-    });} else {
+        res.render("forgot", {
+            title: "Forgot Page",
+            style: "login"
+        });
+    } else {
         res.redirect('/topics')
     }
 })
