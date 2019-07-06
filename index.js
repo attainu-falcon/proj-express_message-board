@@ -504,7 +504,6 @@ app.get('/modifytopic', (req, res) => {
 
     }, function (err, result) {
         res.send(result.result.nModified.toString())
-
     })
 
 })

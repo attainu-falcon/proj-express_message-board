@@ -63,8 +63,10 @@
                 }
             })
         }
-        document.querySelector('.modify-button').addEventListener('click', modifyTopic)
 
+
+        document.querySelector('.modify-button').addEventListener('click', modifyTopic)
+        let confirmModifyHandler 
         function modifyTopic(){
             let name = document.querySelector('.insert-topic').value
             document.querySelectorAll('.topics-container ul li a').forEach(function(element,index){
@@ -77,7 +79,8 @@
                     document.querySelector('.insert-topic').placeholder = 'Enter New Name!'
                     document.querySelector('.modify-button').textContent = 'Confirm!'
                     document.querySelector('.modify-button').removeEventListener('click', modifyTopic)
-                    document.querySelector('.modify-button').addEventListener('click', confirmModify.bind(null,element, id))
+                    confirmModifyHandler = confirmModify.bind(null,element, id)
+                    document.querySelector('.modify-button').addEventListener('click', confirmModifyHandler)
 
                 }
             })
@@ -97,7 +100,7 @@
                     document.querySelector('.modify-button').textContent = 'Modify'
                 }
             })
-            document.querySelector('.modify-button').removeEventListener('click', confirmModify)
+            document.querySelector('.modify-button').removeEventListener('click', confirmModifyHandler)
             document.querySelector('.modify-button').addEventListener('click', modifyTopic)
         }
         function unload() { document.getElementById('loading').style.display = 'block'}
