@@ -405,12 +405,22 @@ app.get('/listtopics', (req, res) => {
 });
 
 app.get('/addtopic', (req, res) => {
-    db.collection('Topics').insertOne({
+    db.collection('Topics').createIndex({
+        name: 1
+    }, {
+        unique: true
+    }, function (err, result) {
+        db.collection('Topics').insertOne({
             name: req.query.name
-        }, (err, result) =>
-        res.send(result.ops)
-    )
-});
+        }, (err, result) => {
+            if (!result) {
+                res.end()
+            } else {
+                res.send(result.ops)
+            }
+        })
+    })
+})
 
 app.get('/deletepost', (req, res) => {
     db.collection('Topics').updateOne({
@@ -472,6 +482,7 @@ app.get('/signup', function (req, res) {
         res.redirect('/topics')
     }
 })
+
 app.get('/forgot', function (req, res) {
     if (!req.session.loggedIn) {
         res.render("forgot", {
@@ -482,6 +493,7 @@ app.get('/forgot', function (req, res) {
         res.redirect('/topics')
     }
 })
+
 app.get('/modifytopic', (req, res) => {
     db.collection('Topics').updateOne({
         _id: ObjectID(req.query.topicid)
@@ -528,11 +540,9 @@ app.get('/leaderboard', function (req, res) {
 })
 
 app.get('/post', function (req, res) {
-    db.collection('Topics').findOne(
-        {
+    db.collection('Topics').findOne({
             'posts._id': ObjectID(req.query.postid)
-        },
-        {
+        }, {
             projection: {
                 posts: {
                     $elemMatch: {
@@ -542,7 +552,7 @@ app.get('/post', function (req, res) {
             }
         },
         function (err, result) {
-            if(result!=null && result.posts[0].username==req.session.username){
+            if (result != null && result.posts[0].username == req.session.username) {
                 res.render("post", {
                     title: "Post Page",
                     style: "styles",
