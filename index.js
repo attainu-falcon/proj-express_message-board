@@ -106,7 +106,9 @@ app.post('/auth', (req, res) => {
                 req.session.loggedIn = false;
                 res.redirect('/')
             }
-        } else {
+
+        } 
+        else {
             req.session.username = req.body.username
             req.session.loggedIn = false;
             res.redirect('/')
