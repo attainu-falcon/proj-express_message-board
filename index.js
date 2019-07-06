@@ -42,21 +42,21 @@ app.post('/register', function (req, res) {
             res.render("signup", {
                 title: "Signup Page",
                 style: "login",
-                var: "username or email id are already exist"
+                var: "Username or email id already exist!"
             });
         } else {
             if (req.body.username.length <= 5) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
-                    var: "username cannot be less than 5 Character"
+                    var: "Username cannot be less than 5 character"
                 });
 
             } else if (req.body.password.length <= 8) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
-                    var: "Password cannot be less than 8 Character"
+                    var: "Password cannot be less than 8 character"
                 });
 
             } else {
@@ -128,9 +128,9 @@ app.post('/authPass', (req, res) => {
         if (result != null && req.body.password == req.body.ConfirmPassword) {
             if (req.body.password.length <= 8) {
                 res.render("forgot", {
-                    title: "Forgot Page",
+                    title: "Forgot Password",
                     style: "login",
-                    var: "Password cannot be less than 8 Character"
+                    var: "Password cannot be less than 8 character"
                 });
             } else {
                 db.collection('Users').updateOne({
@@ -144,7 +144,7 @@ app.post('/authPass', (req, res) => {
                     res.render("forgot", {
                         title: "Forgot Page",
                         style: "login",
-                        var: "Updated"
+                        var: "Updated!"
                     });
 
                 });
@@ -154,7 +154,7 @@ app.post('/authPass', (req, res) => {
             res.render("forgot", {
                 title: "Forgot Page",
                 style: "login",
-                var: "Username or password do not match"
+                var: "Username or password do not match!"
             });
         }
     })
