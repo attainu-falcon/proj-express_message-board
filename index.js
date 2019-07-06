@@ -528,10 +528,35 @@ app.get('/leaderboard', function (req, res) {
 })
 
 app.get('/post', function (req, res) {
-    res.render("post", {
-        title: "Post Page",
-        style: "styles"
-    });
+    db.collection('Topics').findOne(
+        {
+            'posts._id': ObjectID(req.query.postid)
+        },
+        {
+            projection: {
+                posts: {
+                    $elemMatch: {
+                        _id: ObjectID(req.query.postid)
+                    }
+                }
+            }
+        },
+        function (err, result) {
+            if(result!=null && result.posts[0].username==req.session.username){
+                res.render("post", {
+                    title: "Post Page",
+                    style: "styles",
+                    editable: true
+                })
+            } else {
+                res.render("post", {
+                    title: "Post Page",
+                    style: "styles",
+                    editable: false
+                })
+            }
+        }
+    )
 })
 
 
