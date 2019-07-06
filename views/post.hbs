@@ -47,6 +47,7 @@
         })
         document.querySelector('.send-button').addEventListener('click', function () {
             var cmnt = document.querySelector('.insert-comment-box').innerText;
+            if(cmnt!=''){
             let urlParams = new URLSearchParams(window.location.search)
             let topicid = urlParams.get('topicid')
             let postid = urlParams.get('postid')
@@ -62,6 +63,9 @@
                 })
             })
                 .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
+            } else {
+                tinyToast.show('Empty comment!').hide(2000)
+            }
         })
         function renderCommentsCheck(status) {
             let urlParams = new URLSearchParams(window.location.search)
