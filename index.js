@@ -45,14 +45,14 @@ app.post('/register', function (req, res) {
                 var: "Username or email id already exist!"
             });
         } else {
-            if (req.body.username.length <= 5) {
+            if (req.body.username.length <5) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
                     var: "Username cannot be less than 5 character"
                 });
 
-            } else if (req.body.password.length <= 8) {
+            } else if (req.body.password.length <8) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
