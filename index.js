@@ -426,6 +426,23 @@ app.get('/deletepost', (req, res) => {
     })
 })
 
+
+app.post('/modifypost', (req,res) => {
+    console.log(req.body)
+    db.collection('Topics').updateOne({"posts._id":ObjectID(req.body.id)},{
+       '$set':{
+                "posts.$.content": req.body.post 
+            
+            }
+
+    },function(err,result){
+        
+        res.send(result.result.nModified.toString())
+        
+    })     
+})
+
+
 app.get('/', function (req, res) {
     if (!req.session.loggedIn && !req.session.username) {
         res.render("login", {
