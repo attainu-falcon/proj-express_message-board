@@ -1,3 +1,4 @@
+
 <header class="post-container">
     <button class="back" onclick="back()"><</button>
     <div class="post-box" data-placeholder="Share your thoughts!"></div>
@@ -60,8 +61,7 @@
                 postid
             })
         })
-        
-            .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
+        .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
     })
     function renderCommentsCheck(status) {
         let urlParams = new URLSearchParams(window.location.search)
@@ -73,6 +73,7 @@
                 .then(result => renderComments(result))
                 .catch(err => console.log(err))
             function renderComments(result) {
+                document.querySelector('.insert-comment-box').innerText = ''
                 document.querySelector('.comments-list').innerHTML = ''
                 for (const cmnt of result) {
                     let li = document.createElement('li')
@@ -89,23 +90,18 @@
             }
         }
     }
-
     renderCommentsCheck(200)
-
     function back() {
         let urlParams = new URLSearchParams(window.location.search)
         // console.log(urlParams.has('post'))
         let id = urlParams.get('topicid')
         window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
     }
-
     fetch('/getpost' + window.location.search)
         .then(res => res.json()).then(result => renderPost(result)).catch(err => console.log(err))
-
     function renderPost(result) {
         document.querySelector('.post-box').innerHTML = '<b>' + result.username + '</b>' + ' <span style="outline:none">' + result.content + '</span>'
     }
-
     document.querySelector('.topic-heading').addEventListener('click', function () {
         fetch('/updatelikes' + window.location.search)
             .then(result => {
@@ -115,16 +111,11 @@
                 }
             }).catch(err => console.log(err))
     })
-
-
     fetch('/likes' + window.location.search)
         .then(res => res.text()).then(result => renderLikes(result)).catch(err => console.log(err))
-
     function renderLikes(result) {
         document.querySelector('.likes').innerText = result
     }
-
-
     let urlParams = new URLSearchParams(window.location.search)
     if (!urlParams.has('postid')) {
         document.querySelector('.insert-comment-box').style.display = 'none'
@@ -137,30 +128,24 @@
         document.querySelector('.post-button').innerText = 'Edit'
         document.querySelector('.post-button').style.display = 'none'
     }
-
     function deletepost() {
         fetch('/deletepost' + window.location.search)
             .then(res => res.text())
             .then(function (res) {
-
                 if (res == 1) {
-
                     let urlParams = new URLSearchParams(window.location.search)
-
                     let id = urlParams.get('topicid')
                     window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
                 }
             })
     }
-
     function editPost() {
         document.querySelector('.post-box span').contentEditable = true
-        document.querySelector('.post-box span').fo
+        document.querySelector('.post-box span').focus()
+        document.querySelector('.post-box span').select()
         document.querySelector('.edit-button').style.display = 'none'
         document.querySelector('.update-button').style.display = 'inline'
         document.querySelector('.delete-button').style.right = "calc(10% + 110px)"
-
-
     }
     function updatePost() {
         var post = document.querySelector('.post-box span').textContent;

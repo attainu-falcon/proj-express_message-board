@@ -30,213 +30,214 @@ app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
 
 app.post('/register', function (req, res) {
-db.collection('Users').findOne({
-$or: [{
-'username': req.body.username
-}, {
-'email': req.body.email
-}]
-}, function (err, result) {
-if (err) throw err
-if (result != null) {
-res.render("signup", {
-title: "Signup Page",
-style: "login",
-var: "username or email id are already exist"
-});
-} else {
-if (req.body.username.length <= 5) {
-res.render("signup", {
-title: "Signup Page",
-style: "login",
-var: "username cannot be less than 5 Character"
-});
+    db.collection('Users').findOne({
+        $or: [{
+            'username': req.body.username
+        }, {
+            'email': req.body.email
+        }]
+    }, function (err, result) {
+        if (err) throw err
+        if (result != null) {
+            res.render("signup", {
+                title: "Signup Page",
+                style: "login",
+                var: "username or email id are already exist"
+            });
+        } else {
+            if (req.body.username.length < 5) {
+                res.render("signup", {
+                    title: "Signup Page",
+                    style: "login",
+                    var: "username cannot be less than 5 Character"
+                });
 
-} else if (req.body.password.length <= 8) {
-res.render("signup", {
-title: "Signup Page",
-style: "login",
-var: "Password cannot be less than 8 Character"
-});
+            } else if (req.body.password.length <8) {
+                res.render("signup", {
+                    title: "Signup Page",
+                    style: "login",
+                    var: "Password cannot be less than 8 Character"
+                });
 
-} else {
+            } else {
 
-db.collection('Users').insertOne(req.body, function (err, result) {
+                db.collection('Users').insertOne(req.body, function (err, result) {
 
 
-if (err) throw err
-res.render("login", {
-title: "Login Page",
-style: "login",
-var: "Acoount Created"
-});
-})
-}
+                    if (err) throw err
+                    res.render("login", {
+                        title: "Login Page",
+                        style: "login",
+                        var: "Acoount Created"
+                    });
+                })
+            }
 
-}
-})
+        }
+    })
 })
 
 app.post('/auth', (req, res) => {
-
-db.collection('Users').findOne({
-"username": req.body.username
-}, function (err, result) {
-if (err) throw err;
-if (result != null) {
-if (req.body.password == result.password) {
-req.session.loggedIn = true;
-req.session.username = req.body.username;
-if (result.username == "yashpal") {
-req.session.Admin=true;
-res.redirect('/topics')
-} else {
-req.session.Admin=false;
-res.redirect('/topics')
-}
-} else {
-req.session.loggedIn = false;
-res.render("login", {
-title: "Login Page",
-style: "login",
-var: "Wrong UserName or Password"
-});
-}
-} else {
-req.session.loggedIn = false;
-res.render("login", {
-title: "Login Page",
-style: "login",
-var: "Wrong UserName or Password"
-});
-}
-})
+    if (!req.session.username) {
+        req.session.username = req.body.username
+        req.session.password = req.body.password
+    }
+    db.collection('Users').findOne({
+        "username": req.session.username
+    }, function (err, result) {
+        if (err) throw err;
+        if (result != null) {
+            if (req.body.password == result.password) {
+                req.session.loggedIn = true;
+                req.session.username = req.body.username
+                if (result.username == "admin") {
+                    req.session.Admin = true;
+                    res.redirect('/topics')
+                } else {
+                    req.session.Admin = false;
+                    res.redirect('/topics')
+                }
+            } else {
+                req.session.loggedIn = false;
+                res.render("login", {
+                    title: "Login Page",
+                    style: "login",
+                    var: "Wrong UserName or Password"
+                });
+            }
+        } else {
+            req.session.loggedIn = false;
+            res.render("login", {
+                title: "Login Page",
+                style: "login",
+                var: "Wrong UserName or Password"
+            });
+        }
+    })
 })
 
 app.get('/logout', function (req, res) {
-req.session.destroy()
-res.redirect('/')
+    req.session.destroy()
+    res.redirect('/')
 })
 
 app.post('/authPass', (req, res) => {
-db.collection('Users').findOne({
-'username': req.body.username
-}, function (err, result) {
-if (err) throw err;
+    db.collection('Users').findOne({
+        'username': req.body.username
+    }, function (err, result) {
+        if (err) throw err;
 
-if (result != null && req.body.password == req.body.ConfirmPassword) {
-if (req.body.password.length <= 8) {
-res.render("forgot", {
-title: "Forgot Page",
-style: "login",
-var: "Password cannot be less than 8 Character"
-});
-} else {
-db.collection('Users').updateOne({
-username: result.username
-}, {
-$set: {
-password: req.body.password
-}
-}, function (err, result) {
-if (err) throw err;
-res.render("forgot", {
-title: "Forgot Page",
-style: "login",
-var: "Updated"
-});
+        if (result != null && req.body.password == req.body.ConfirmPassword) {
+            if (req.body.password.length <= 8) {
+                res.render("forgot", {
+                    title: "Forgot Page",
+                    style: "login",
+                    var: "Password cannot be less than 8 Character"
+                });
+            } else {
+                db.collection('Users').updateOne({
+                    username: result.username
+                }, {
+                    $set: {
+                        password: req.body.password
+                    }
+                }, function (err, result) {
+                    if (err) throw err;
+                    res.render("forgot", {
+                        title: "Forgot Page",
+                        style: "login",
+                        var: "Updated"
+                    });
 
-});
-}
+                });
+            }
 
-} else {
-res.render("forgot", {
-title: "Forgot Page",
-style: "login",
-var: "Username or password do not match"
-});
-}
-})
+        } else {
+            res.render("forgot", {
+                title: "Forgot Page",
+                style: "login",
+                var: "Username or password do not match"
+            });
+        }
+    })
 })
 
 
 app.post('/createpost', function (req, res) {
-let post = {
-'_id': new ObjectID(),
-'username': req.session.username,
-'content': req.body.post
-}
-db.collection('Topics').updateOne({
-_id: ObjectID(req.body.id)
-}, {
-$push: {
-posts: post
-}
-},
-function (err, result) {
-if (err) throw err;
-res.send(result);
-})
+    let post = {
+        '_id': new ObjectID(),
+        'username': req.session.username,
+        'content': req.body.post
+    }
+    db.collection('Topics').updateOne({
+            _id: ObjectID(req.body.id)
+        }, {
+            $push: {
+                posts: post
+            }
+        },
+        function (err, result) {
+            if (err) throw err;
+            res.send(result);
+        })
 })
 
 app.post('/createcomment', function (req, res) {
-let cmnt = {
-'_id': new ObjectID(),
-'username': req.session.username,
-'content': req.body.cmnt
-}
-db.collection('Topics').updateOne({
-'posts._id': ObjectID(req.body.postid)
-}, {
-$push: {
-'posts.$[el].comments': cmnt
-}
-}, {
-arrayFilters: [{
-'el._id': ObjectID(req.body.postid)
-}]
-},
-function (err, result) {
-if (err) throw err
-if (result.result.nModified) res.sendStatus(200)
-}
-)
+    let cmnt = {
+        '_id': new ObjectID(),
+        'username': req.session.username,
+        'content': req.body.cmnt
+    }
+    db.collection('Topics').updateOne({
+            'posts._id': ObjectID(req.body.postid)
+        }, {
+            $push: {
+                'posts.$[el].comments': cmnt
+            }
+        }, {
+            arrayFilters: [{
+                'el._id': ObjectID(req.body.postid)
+            }]
+        },
+        function (err, result) {
+            if (err) throw err
+            if (result.result.nModified) res.sendStatus(200)
+        }
+    )
 })
 
 app.get('/getpost', function (req, res) {
-db.collection('Topics').findOne({
-'posts._id': ObjectID(req.query.postid)
-}, {
-projection: {
-posts: {
-$elemMatch: {
-_id: ObjectID(req.query.postid)
-}
-}
-}
-},
-function (err, result) {
-if (err) throw err
-if (result != null)
-res.send(result.posts[0])
-else
-res.end()
-})
+    db.collection('Topics').findOne({
+            'posts._id': ObjectID(req.query.postid)
+        }, {
+            projection: {
+                posts: {
+                    $elemMatch: {
+                        _id: ObjectID(req.query.postid)
+                    }
+                }
+            }
+        },
+        function (err, result) {
+            if (err) throw err
+            if (result != null)
+                res.send(result.posts[0])
+            else
+                res.end()
+        })
 })
 
 app.get('/latestposts', function (req, res) {
-db.collection('Topics').find({
-'_id': ObjectID(req.query.topicid)
-}).toArray(function (err, result) {
-res.send(result[0])
-})
+    db.collection('Topics').find({
+        '_id': ObjectID(req.query.topicid)
+    }).toArray(function (err, result) {
+        res.send(result[0])
+    })
 })
 
 app.get('/topusers', function (req, res) {
-    let pipeline = [
-        {
-            $match:
-            {
+    let pipeline = [{
+            $match: {
                 _id: ObjectID(req.query.topicid)
             }
         },
@@ -244,23 +245,18 @@ app.get('/topusers', function (req, res) {
             $unwind: '$posts'
         },
         {
-            $addFields:
-            {
-                likes:
-                {
-                    $size:
-                    {
+            $addFields: {
+                likes: {
+                    $size: {
                         $ifNull: ['$posts.likes', []]
                     }
                 }
             }
         },
         {
-            $group:
-            {
+            $group: {
                 _id: '$posts.username',
-                userLikes:
-                {
+                userLikes: {
                     $sum: '$likes'
                 },
                 name: {
@@ -269,14 +265,12 @@ app.get('/topusers', function (req, res) {
             }
         },
         {
-            $sort:
-            {
+            $sort: {
                 'userLikes': -1
             }
         }
     ]
     db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
-        console.log(result)
         res.send(result)
     })
 })
@@ -327,201 +321,196 @@ app.get('/topposts', function (req, res) {
 })
 
 app.get('/commentlist', function (req, res) {
-db.collection('Topics').findOne({
-'posts._id': ObjectID(req.query.postid)
-}, {
-projection: {
-posts: {
-$elemMatch: {
-_id: ObjectID(req.query.postid)
-}
-}
-}
-},
-function (err, result) {
-res.send(result.posts[0].comments)
-})
+    db.collection('Topics').findOne({
+            'posts._id': ObjectID(req.query.postid)
+        }, {
+            projection: {
+                posts: {
+                    $elemMatch: {
+                        _id: ObjectID(req.query.postid)
+                    }
+                }
+            }
+        },
+        function (err, result) {
+            res.send(result.posts[0].comments)
+        })
 })
 
 app.get('/likes', function (req, res) {
-let pipeline = [{
-$match: {
-'posts._id': ObjectID(req.query.postid)
-}
-},
-{
-$unwind: '$posts'
-},
-{
-$match: {
-'posts._id': ObjectID(req.query.postid)
-}
-},
-{
-$project: {
-_id: 0,
-likes: {
-$size: {
-$ifNull: ['$posts.likes', []]
-}
-}
-}
-}
-]
-db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
-if (err) throw err
-if (result[0]) res.send(result[0].likes.toString())
-res.end()
-})
+    let pipeline = [{
+            $match: {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {
+                'posts._id': ObjectID(req.query.postid)
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                likes: {
+                    $size: {
+                        $ifNull: ['$posts.likes', []]
+                    }
+                }
+            }
+        }
+    ]
+    db.collection('Topics').aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        if (result[0]) res.send(result[0].likes.toString())
+        res.end()
+    })
 })
 
 app.get('/updatelikes', function (req, res) {
-db.collection('Topics').updateOne({
-'posts._id': ObjectID(req.query.postid)
-}, {
-$addToSet: {
-'posts.$[el].likes': req.session.username
-}
-}, {
-arrayFilters: [{
-'el._id': ObjectID(req.query.postid)
-}]
-},
-function (err, result) {
-if (err) throw err
-if (result.result.nModified) res.sendStatus(200)
-}
-)
+    db.collection('Topics').updateOne({
+            'posts._id': ObjectID(req.query.postid)
+        }, {
+            $addToSet: {
+                'posts.$[el].likes': req.session.username
+            }
+        }, {
+            arrayFilters: [{
+                'el._id': ObjectID(req.query.postid)
+            }]
+        },
+        function (err, result) {
+            if (err) throw err
+            if (result.result.nModified) res.sendStatus(200)
+        }
+    )
 })
 
 app.get('/deletetopic', function (req, res) {
-db.collection('Topics').deleteOne({
-"_id": ObjectID(req.query.topicid)
-}, function (err, result) {
-console.log(result.result.n)
+    db.collection('Topics').deleteOne({
+        "_id": ObjectID(req.query.topicid)
+    }, function (err, result) {
+        res.send(result.result.n.toString())
 
-//if(err) throw err;
-//console.log(result)
-// res.send(result.result.nModified.toString())
-//console.log(result)
-res.send(result.result.n.toString())
-
-})
+    })
 })
 
 app.get('/listtopics', (req, res) => {
-db.collection('Topics').find({}, {
-projection: {
-name: 1
-}
-}).toArray((err, result) =>
-res.send(result)
-)
+    db.collection('Topics').find({}, {
+        projection: {
+            name: 1
+        }
+    }).toArray((err, result) =>
+        res.send(result)
+    )
 });
 
 app.get('/addtopic', (req, res) => {
-db.collection('Topics').insertOne({
-name: req.query.name
-}, (err, result) =>
-res.send(result.ops)
-)
+    db.collection('Topics').insertOne({
+            name: req.query.name
+        }, (err, result) =>
+        res.send(result.ops)
+    )
 });
 
 app.get('/deletepost', (req, res) => {
-db.collection('Topics').updateOne({
-'posts._id': ObjectID(req.query.postid)
-}, {
-'$pull': {
-posts: {
-_id: ObjectID(req.query.postid)
-}
-}
-}, function (err, result) {
-//console.log(result.result.nModified.toString())
-res.send(result.result.nModified.toString())
-})
+    db.collection('Topics').updateOne({
+        'posts._id': ObjectID(req.query.postid)
+    }, {
+        '$pull': {
+            posts: {
+                _id: ObjectID(req.query.postid)
+            }
+        }
+    }, function (err, result) {
+        res.send(result.result.nModified.toString())
+    })
 })
 
 app.get('/', function (req, res) {
-
-res.render("login", {
-title: "Login Page",
-style: "login"
-});
+    if (!req.session.loggedIn) {
+        res.render("login", {
+            title: "Login Page",
+            style: "login"
+        });
+    } else {
+        res.redirect('/topics')
+    }
 })
 
 app.get('/signup', function (req, res) {
-res.render("signup", {
-title: "Signup Page",
-style: "login"
-});
+    res.render("signup", {
+        title: "Signup Page",
+        style: "login"
+    });
 })
 app.get('/forgot', function (req, res) {
 
-res.render("forgot", {
-title: "Forgot Page",
-style: "login"
-});
+    res.render("forgot", {
+        title: "Forgot Page",
+        style: "login"
+    });
 })
 app.get('/modifytopic', (req, res) => {
-console.log(req.body)
-db.collection('Topics').updateOne({
-_id: ObjectID(req.query.topicid)
-}, {
-'$set': {
-name: req.query.newname
-}
+    db.collection('Topics').updateOne({
+        _id: ObjectID(req.query.topicid)
+    }, {
+        '$set': {
+            name: req.query.newname
+        }
 
-}, function (err, result) {
-console.log(result.result)
-res.send(result.result.nModified.toString())
+    }, function (err, result) {
+        res.send(result.result.nModified.toString())
 
-})
+    })
 
 })
 
 app.get('/topics', function (req, res) {
-    if (req.session.Admin== true) {
+    if (req.session.Admin == true) {
 
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
-            flag : true
+            user: req.session.username,
+            flag: true
 
-            });
+        });
 
-    } else if (req.session.Admin== false){
-     res.render("topics.hbs", {
+    } else if (req.session.Admin == false) {
+        res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
+            user: req.session.username,
             flag: false
-            });
-    }
-    else{
+        });
+    } else {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles"
-            });
+        });
     }
 })
 
 app.get('/leaderboard', function (req, res) {
-res.render("leaderboard", {
-title: "LeaderBoard Page",
-style: "styles"
-});
+    res.render("leaderboard", {
+        title: "LeaderBoard Page",
+        style: "styles"
+    });
 })
 
 app.get('/post', function (req, res) {
-res.render("post", {
-title: "Post Page",
-style: "styles"
-});
+    res.render("post", {
+        title: "Post Page",
+        style: "styles"
+    });
 })
 
 
 app.get('/*', function (req, res) {
-res.send('404 page Not Found')
+    res.send('404 page Not Found')
 })
 
 app.listen(process.env.PORT || 3000, _ => console.log(`App running at ${process.env.PORT || 3000}`))
