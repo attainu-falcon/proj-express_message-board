@@ -68,7 +68,7 @@ button[type=submit] {
     max-height: 100vh;
     text-align: center;
     margin: auto;
-    padding-top: 30vh;
+    padding-top: 15vh;
 }
 ::placeholder {
     color: white;
