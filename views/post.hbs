@@ -1,175 +1,195 @@
+<body onbeforeunload="unload()">
+    <header class="post-container">
+        <button class="back" onclick="back()"><</button>
+        <div class="post-box" data-placeholder="Share your thoughts!"></div>
+        <div class="toolbar">
+            <h2 class="topic-heading">★ <span class="likes"></span></h2>
+            <button class="delete-button" onclick="deletepost()">delete</button>
+            <button class="post-button">Post</button>
+            <button class="edit-button" onclick="editPost()">Edit</button>
+            <button class="update-button" onclick="updatePost()" style="display: none">Update</button>
 
-<header class="post-container">
-    <button class="back" onclick="back()"><</button>
-    <div class="post-box" data-placeholder="Share your thoughts!"></div>
-
-            <div class="toolbar">
-                <h2 class="topic-heading">★ <span class="likes"></span></h2>
-                <button class="delete-button" onclick="deletepost()">delete</button>
-                <button class="post-button">Post</button>
-                <button class="edit-button" onclick="editPost()">Edit</button>
-                <button class="update-button" onclick="updatePost()" style="display: none">Update</button>
-
-            </div>
-</header>
-<main class="comments-container">
-    <div class="insert-comment-box" contenteditable="true" data-placeholder="Enter comment."></div>
-    <!--
+        </div>
+    </header>
+    <main class="comments-container">
+        <div class="insert-comment-box" contenteditable="true" data-placeholder="Enter comment."></div>
+        <!--
      --><button class="send-button">Send</button>
-    <ul class="comments-list">
-        <!-- <li><div class="comment-box">your comments.</div></li> -->
-    </ul>
-</main>
-<script>
-    document.querySelector('.post-button').addEventListener('click', function () {
-        var post = document.querySelector('.post-box').textContent
-        let urlParams = new URLSearchParams(window.location.search)
-        let id = urlParams.get('topicid')
-        if (post != "") {
-            fetch('/createpost', {
+        <ul class="comments-list">
+            <!-- <li><div class="comment-box">your comments.</div></li> -->
+        </ul>
+    </main>
+    <script>
+        document.querySelector('.post-button').addEventListener('click', function () {
+            var post = document.querySelector('.post-box').textContent
+            let urlParams = new URLSearchParams(window.location.search)
+            let id = urlParams.get('topicid')
+            if (post != "") {
+                fetch('/createpost', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        post,
+                        id
+                    })
+                }).then(result => {
+                    if (result.status == 200) {
+                        window.location.replace("leaderboard" + window.location.search)
+                    }
+                }).catch(error => console.log(error))
+            }
+            else {
+                tinyToast.show("post is blank.!").hide(700)
+            }
+        })
+        document.querySelector('.send-button').addEventListener('click', function () {
+            var cmnt = document.querySelector('.insert-comment-box').innerText;
+            let urlParams = new URLSearchParams(window.location.search)
+            let topicid = urlParams.get('topicid')
+            let postid = urlParams.get('postid')
+            fetch('/createcomment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    post,
-                    id
+                    cmnt,
+                    topicid,
+                    postid
                 })
-            }).then(result => {
-                if (result.status == 200) {
-                    window.location.replace("leaderboard" + window.location.search)
-                }
-            }).catch(error => console.log(error))
-        }
-        else {
-            tinyToast.show("post is blank.!").hide(700)
-        }
-    })
-    document.querySelector('.send-button').addEventListener('click', function () {
-        var cmnt = document.querySelector('.insert-comment-box').innerText;
-        let urlParams = new URLSearchParams(window.location.search)
-        let topicid = urlParams.get('topicid')
-        let postid = urlParams.get('postid')
-        fetch('/createcomment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                cmnt,
-                topicid,
-                postid
             })
+                .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
         })
-        .then(result => renderCommentsCheck(result.status)).catch(error => console.log(error))
-    })
-    function renderCommentsCheck(status) {
-        let urlParams = new URLSearchParams(window.location.search)
-        if (status == 200 && urlParams.has('postid')) {
-            let topicid = urlParams.get('topicid')
-            let postid = urlParams.get('postid')
-            fetch('/commentlist?topicid=' + topicid + '&postid=' + postid)
-                .then(res => res.json())
-                .then(result => renderComments(result))
-                .catch(err => console.log(err))
-            function renderComments(result) {
-                document.querySelector('.insert-comment-box').innerText = ''
-                document.querySelector('.comments-list').innerHTML = ''
-                for (const cmnt of result) {
-                    let li = document.createElement('li')
-                    let div = document.createElement('div')
-                    let b = document.createElement('b')
-                    b.textContent = cmnt.username + ' '
-                    div.className = 'comment-box'
-                    div.setAttribute('data-id', cmnt._id)
-                    div.innerText = cmnt.content
-                    div.prepend(b)
-                    li.appendChild(div)
-                    document.querySelector('.comments-list').prepend(li)
+        function renderCommentsCheck(status) {
+            let urlParams = new URLSearchParams(window.location.search)
+            if (status == 200 && urlParams.has('postid')) {
+                let topicid = urlParams.get('topicid')
+                let postid = urlParams.get('postid')
+                fetch('/commentlist?topicid=' + topicid + '&postid=' + postid)
+                    .then(res => res.json())
+                    .then(result => renderComments(result))
+                    .catch(err => document.getElementById('loading').style.display = 'none')
+                function renderComments(result) {
+                    document.querySelector('.insert-comment-box').innerText = ''
+                    document.querySelector('.comments-list').innerHTML = ''
+                    for (const cmnt of result) {
+                        let li = document.createElement('li')
+                        let div = document.createElement('div')
+                        let b = document.createElement('b')
+                        b.textContent = cmnt.username + ' '
+                        div.className = 'comment-box'
+                        div.setAttribute('data-id', cmnt._id)
+                        div.innerText = cmnt.content
+                        div.prepend(b)
+                        li.appendChild(div)
+                        document.querySelector('.comments-list').prepend(li)
+                    }
+                    document.getElementById('loading').style.display = 'none'
                 }
             }
         }
-    }
-    renderCommentsCheck(200)
-    function back() {
-        let urlParams = new URLSearchParams(window.location.search)
-        // console.log(urlParams.has('post'))
-        let id = urlParams.get('topicid')
-        window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
-    }
-    fetch('/getpost' + window.location.search)
-        .then(res => res.json()).then(result => renderPost(result)).catch(err => console.log(err))
-    function renderPost(result) {
-        document.querySelector('.post-box').innerHTML = '<b>' + result.username + '</b>' + ' <span style="outline:none">' + result.content + '</span>'
-    }
-    document.querySelector('.topic-heading').addEventListener('click', function () {
-        fetch('/updatelikes' + window.location.search)
-            .then(result => {
-                if (result.status == 200) {
-                    let count = parseInt(document.querySelector('.likes').innerText)
-                    document.querySelector('.likes').innerText = count + 1
-                }
-            }).catch(err => console.log(err))
-    })
-    fetch('/likes' + window.location.search)
-        .then(res => res.text()).then(result => renderLikes(result)).catch(err => console.log(err))
-    function renderLikes(result) {
-        document.querySelector('.likes').innerText = result
-    }
-    let urlParams = new URLSearchParams(window.location.search)
-    if (!urlParams.has('postid')) {
-        document.querySelector('.insert-comment-box').style.display = 'none'
-        document.querySelector('.send-button').style.display = 'none'
-        document.querySelector('.topic-heading').style.display = 'none'
-        document.querySelector('.edit-button').style.display = 'none'
-        document.querySelector('.delete-button').style.display = 'none'
-        document.querySelector('.post-box').contentEditable = true
-    } else {
-        document.querySelector('.post-button').innerText = 'Edit'
-        document.querySelector('.post-button').style.display = 'none'
-    }
-    function deletepost() {
-        fetch('/deletepost' + window.location.search)
-            .then(res => res.text())
-            .then(function (res) {
-                if (res == 1) {
-                    let urlParams = new URLSearchParams(window.location.search)
-                    let id = urlParams.get('topicid')
-                    window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
-                }
-            })
-    }
-    function editPost() {
-        document.querySelector('.post-box span').contentEditable = true
-        document.querySelector('.post-box span').focus()
-        document.querySelector('.post-box span').select()
-        document.querySelector('.edit-button').style.display = 'none'
-        document.querySelector('.update-button').style.display = 'inline'
-        document.querySelector('.delete-button').style.right = "calc(10% + 110px)"
-    }
-    function updatePost() {
-        var post = document.querySelector('.post-box span').textContent;
-        let urlParams = new URLSearchParams(window.location.search)
-        let id = urlParams.get('postid')
-        fetch('/modifypost', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                post,
-                id
-            })
+
+        renderCommentsCheck(200)
+
+        function back() {
+            let urlParams = new URLSearchParams(window.location.search)
+            // console.log(urlParams.has('post'))
+            let id = urlParams.get('topicid')
+            window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
+        }
+
+        fetch('/getpost' + window.location.search)
+            .then(res => res.json()).then(result => renderPost(result)).catch(err => console.log(err))
+
+        function renderPost(result) {
+            document.querySelector('.post-box').innerHTML = '<b>' + result.username + '</b>' + ' <span style="outline:none">' + result.content + '</span>'
+        }
+
+        document.querySelector('.topic-heading').addEventListener('click', function () {
+            fetch('/updatelikes' + window.location.search)
+                .then(result => {
+                    if (result.status == 200) {
+                        let count = parseInt(document.querySelector('.likes').innerText)
+                        document.querySelector('.likes').innerText = count + 1
+                    }
+                }).catch(err => console.log(err))
         })
-            .then(res => res.text())
-            .then(function (res) {
-                if (res == 1) {
-                    document.querySelector('.post-box span').contentEditable = false
-                    document.querySelector('.update-button').style.display = 'none'
-                    document.querySelector('.edit-button').style.display = 'inline'
-                    document.querySelector('.delete-button').style.right = "calc(10% + 80px)"
-                    tinyToast.show("post updated !").hide(2000)
-                }
+
+
+        fetch('/likes' + window.location.search)
+            .then(res => res.text()).then(result => renderLikes(result)).catch(err => console.log(err))
+
+        function renderLikes(result) {
+            document.querySelector('.likes').innerText = result
+        }
+
+
+
+        function deletepost() {
+            fetch('/deletepost' + window.location.search)
+                .then(res => res.text())
+                .then(function (res) {
+
+                    if (res == 1) {
+
+                        let urlParams = new URLSearchParams(window.location.search)
+
+                        let id = urlParams.get('topicid')
+                        window.location.replace('/leaderboard?topicid=' + id + window.location.hash)
+                    }
+                })
+        }
+
+        function editPost() {
+            document.querySelector('.post-box span').contentEditable = true
+            document.querySelector('.post-box span').focus()
+            document.querySelector('.edit-button').style.display = 'none'
+            document.querySelector('.update-button').style.display = 'inline'
+            document.querySelector('.delete-button').style.right = "calc(10% + 110px)"
+        }
+        function updatePost() {
+            var post = document.querySelector('.post-box span').textContent;
+            let urlParams = new URLSearchParams(window.location.search)
+            let id = urlParams.get('postid')
+            fetch('/modifypost', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    post,
+                    id
+                })
             })
-    }
-</script>
+                .then(res => res.text())
+                .then(function (res) {
+                    if (res == 1) {
+                        document.querySelector('.post-box span').style.textDecoration = 'none'
+                        document.querySelector('.post-box span').contentEditable = false
+                        document.querySelector('.update-button').style.display = 'none'
+                        document.querySelector('.edit-button').style.display = 'inline'
+                        document.querySelector('.delete-button').style.right = "calc(10% + 80px)"
+                        tinyToast.show("post updated !").hide(2000)
+                    }
+                })
+        }
+        
+        let urlParams = new URLSearchParams(window.location.search)
+        if (!urlParams.has('postid')) {
+            document.querySelector('.insert-comment-box').style.display = 'none'
+            document.querySelector('.send-button').style.display = 'none'
+            document.querySelector('.topic-heading').style.display = 'none'
+            document.querySelector('.edit-button').style.display = 'none'
+            document.querySelector('.delete-button').style.display = 'none'
+            document.querySelector('.post-box').contentEditable = true
+            document.getElementById('loading').style.display = 'none'
+        } else {
+            document.querySelector('.post-button').innerText = 'Edit'
+            document.querySelector('.post-button').style.display = 'none'
+        }
+
+        function unload() { document.getElementById('loading').style.display = 'block' }
+    </script>
+</body>

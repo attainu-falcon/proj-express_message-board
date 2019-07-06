@@ -42,21 +42,21 @@ app.post('/register', function (req, res) {
             res.render("signup", {
                 title: "Signup Page",
                 style: "login",
-                var: "username or email id are already exist"
+                var: "Username or email id already exist!"
             });
         } else {
-            if (req.body.username.length < 5) {
+            if (req.body.username.length <= 5) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
-                    var: "username cannot be less than 5 Character"
+                    var: "Username cannot be less than 5 character"
                 });
 
-            } else if (req.body.password.length <8) {
+            } else if (req.body.password.length <= 8) {
                 res.render("signup", {
                     title: "Signup Page",
                     style: "login",
-                    var: "Password cannot be less than 8 Character"
+                    var: "Password cannot be less than 8 character"
                 });
 
             } else {
@@ -68,7 +68,7 @@ app.post('/register', function (req, res) {
                     res.render("login", {
                         title: "Login Page",
                         style: "login",
-                        var: "Acoount Created"
+                        var: "Account Created"
                     });
                 })
             }
@@ -78,18 +78,22 @@ app.post('/register', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    if (!req.session.username) {
+    if (!req.session.username && !req.session.password) {
         req.session.username = req.body.username
         req.session.password = req.body.password
+    } else {
+        if (req.session.password != req.body.password) {
+            req.session.username = req.body.username
+            req.session.password = req.body.password
+        }
     }
     db.collection('Users').findOne({
         "username": req.session.username
     }, function (err, result) {
         if (err) throw err;
         if (result != null) {
-            if (req.body.password == result.password) {
-                req.session.loggedIn = true;
-                req.session.username = req.body.username
+            if (req.session.password == result.password) {
+                req.session.loggedIn = true
                 if (result.username == "admin") {
                     req.session.Admin = true;
                     res.redirect('/topics')
@@ -98,20 +102,14 @@ app.post('/auth', (req, res) => {
                     res.redirect('/topics')
                 }
             } else {
+                req.session.username = req.body.username
                 req.session.loggedIn = false;
-                res.render("login", {
-                    title: "Login Page",
-                    style: "login",
-                    var: "Wrong UserName or Password"
-                });
+                res.redirect('/')
             }
         } else {
+            req.session.username = req.body.username
             req.session.loggedIn = false;
-            res.render("login", {
-                title: "Login Page",
-                style: "login",
-                var: "Wrong UserName or Password"
-            });
+            res.redirect('/')
         }
     })
 })
@@ -130,9 +128,9 @@ app.post('/authPass', (req, res) => {
         if (result != null && req.body.password == req.body.ConfirmPassword) {
             if (req.body.password.length <= 8) {
                 res.render("forgot", {
-                    title: "Forgot Page",
+                    title: "Forgot Password",
                     style: "login",
-                    var: "Password cannot be less than 8 Character"
+                    var: "Password cannot be less than 8 character"
                 });
             } else {
                 db.collection('Users').updateOne({
@@ -146,7 +144,7 @@ app.post('/authPass', (req, res) => {
                     res.render("forgot", {
                         title: "Forgot Page",
                         style: "login",
-                        var: "Updated"
+                        var: "Updated!"
                     });
 
                 });
@@ -156,7 +154,7 @@ app.post('/authPass', (req, res) => {
             res.render("forgot", {
                 title: "Forgot Page",
                 style: "login",
-                var: "Username or password do not match"
+                var: "Username or password do not match!"
             });
         }
     })
@@ -393,7 +391,6 @@ app.get('/deletetopic', function (req, res) {
         "_id": ObjectID(req.query.topicid)
     }, function (err, result) {
         res.send(result.result.n.toString())
-
     })
 })
 
@@ -429,11 +426,36 @@ app.get('/deletepost', (req, res) => {
     })
 })
 
+
+app.post('/modifypost', (req, res) => {
+    db.collection('Topics').updateOne({
+        "posts._id": ObjectID(req.body.id)
+    }, {
+        '$set': {
+            "posts.$.content": req.body.post
+
+        }
+
+    }, function (err, result) {
+
+        res.send(result.result.nModified.toString())
+
+    })
+})
+
+
 app.get('/', function (req, res) {
-    if (!req.session.loggedIn) {
+    if (!req.session.loggedIn && !req.session.username) {
         res.render("login", {
             title: "Login Page",
             style: "login"
+        });
+    } else if (!req.session.loggedIn) {
+        req.session.destroy()
+        res.render("login", {
+            title: "Login Page",
+            style: "login",
+            var: "Username or password do not match"
         });
     } else {
         res.redirect('/topics')
@@ -441,17 +463,24 @@ app.get('/', function (req, res) {
 })
 
 app.get('/signup', function (req, res) {
-    res.render("signup", {
-        title: "Signup Page",
-        style: "login"
-    });
+    if (!req.session.loggedIn) {
+        res.render("signup", {
+            title: "Signup Page",
+            style: "login"
+        })
+    } else {
+        res.redirect('/topics')
+    }
 })
 app.get('/forgot', function (req, res) {
-
-    res.render("forgot", {
-        title: "Forgot Page",
-        style: "login"
-    });
+    if (!req.session.loggedIn) {
+        res.render("forgot", {
+            title: "Forgot Page",
+            style: "login"
+        });
+    } else {
+        res.redirect('/topics')
+    }
 })
 app.get('/modifytopic', (req, res) => {
     db.collection('Topics').updateOne({
@@ -474,16 +503,13 @@ app.get('/topics', function (req, res) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
-            user: req.session.username,
             flag: true
-
         });
 
     } else if (req.session.Admin == false) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
-            user: req.session.username,
             flag: false
         });
     } else {

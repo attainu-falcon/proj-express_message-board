@@ -1,5 +1,5 @@
 
-<body onhashchange="listPosts()">
+<body onhashchange="listPosts()" onbeforeunload="unload()">
     <header class="category-container">
 
         <form action="/topics" method="GET">
@@ -74,6 +74,7 @@
                     li.appendChild(a)
                     document.querySelector('.posts-container ul').prepend(li)
                 }
+                document.getElementById('loading').style.display = 'none'
             }
             function renderUIusers(result) {
                 document.querySelector('.topic-heading').innerHTML = '#'+result[0].name
@@ -105,5 +106,6 @@
             // let id = urlParams.get('topicid')
             window.location.replace('/topics')
         }
+        function unload(){ document.getElementById('loading').style.display = 'block'}
     </script>
 </body>

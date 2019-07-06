@@ -1,5 +1,7 @@
-  <body class="topics">
-        <header class="bar"><h1 class="toolbar-heading">Hi, {{user}}</h1>
+  <body class="topics" onbeforeunload="unload()">
+        <header class="bar">
+            <img src="logo.png" alt="Message Board" style="max-height: 50px;max-width: 40%;margin: 30px 150px 0px 150px"><br><img src="team.png" alt="Message Board" style="max-height: 30px;max-width: 40%;margin: 0px 150px 0px 150px">
+
             <form action="/logout">
                 <button class="logout-button">Logout</button>
             </form>
@@ -30,6 +32,7 @@
                 li.appendChild(a)
                 document.querySelector('.topics-container ul').appendChild(li)
             }
+            document.getElementById('loading').style.display = 'none'
         }
         function addTopic() {
             let name = document.querySelector('.insert-topic').value
@@ -91,13 +94,13 @@
                     element.parentElement.style.border = 'none'
                     tinyToast.show("topic renamed!").hide(2000)
                     document.querySelector('.insert-topic').value = ''
-                    document.querySelector('.insert-topic').placeholder = 'Type in a dscussion topic.'
+                    document.querySelector('.insert-topic').placeholder = 'Type in a discussion topic.'
                     document.querySelector('.modify-button').textContent = 'Modify'
                 }
             })
             document.querySelector('.modify-button').removeEventListener('click', confirmModify)
             document.querySelector('.modify-button').addEventListener('click', modifyTopic)
         }
-
+        function unload() { document.getElementById('loading').style.display = 'block'}
     </script>
 </body>
