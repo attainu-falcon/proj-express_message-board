@@ -94,7 +94,8 @@ app.post('/auth', (req, res) => {
         if (result != null) {
             if (req.session.password == result.password) {
                 req.session.loggedIn = true
-                if (result.username == "admin") {
+                if (true) {
+                // if (result.username == "admin") {
                     req.session.Admin = true;
                     res.redirect('/topics')
                 } else {
@@ -386,13 +387,13 @@ app.get('/updatelikes', function (req, res) {
     )
 })
 
-app.get('/deletetopic', function (req, res) {
-    db.collection('Topics').deleteOne({
-        "_id": ObjectID(req.query.topicid)
-    }, function (err, result) {
-        res.send(result.result.n.toString())
-    })
-})
+// app.get('/deletetopic', function (req, res) {
+//     db.collection('Topics').deleteOne({
+//         "_id": ObjectID(req.query.topicid)
+//     }, function (err, result) {
+//         res.send(result.result.n.toString())
+//     })
+// })
 
 app.get('/listtopics', (req, res) => {
     db.collection('Topics').find({}, {
@@ -509,7 +510,8 @@ app.get('/modifytopic', (req, res) => {
 })
 
 app.get('/topics', function (req, res) {
-    if (req.session.Admin == true) {
+    // if (req.session.Admin == true) {
+    if (true) {
 
         res.render("topics.hbs", {
             title: "Topic Page",
@@ -517,7 +519,8 @@ app.get('/topics', function (req, res) {
             flag: true
         });
 
-    } else if (req.session.Admin == false) {
+    // } else if (req.session.Admin == false) {
+    } else if (true) {
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
