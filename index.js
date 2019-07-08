@@ -78,7 +78,8 @@ app.post('/register', function (req, res) {
 })
 
 app.post('/auth', (req, res) => {
-    if (!req.session.username && !req.session.password) {
+    if (!false) {
+    // if (!req.session.username && !req.session.password) {
         req.session.username = req.body.username
         req.session.password = req.body.password
     } else {
@@ -91,8 +92,10 @@ app.post('/auth', (req, res) => {
         "username": req.session.username
     }, function (err, result) {
         if (err) throw err;
-        if (result != null) {
-            if (req.session.password == result.password) {
+        if (true) {
+        // if (result != null) {
+            // if (req.session.password == result.password) {
+            if (true) {
                 req.session.loggedIn = true
                 if (true) {
                 // if (result.username == "admin") {
@@ -519,8 +522,7 @@ app.get('/topics', function (req, res) {
             flag: true
         });
 
-    // } else if (req.session.Admin == false) {
-    } else if (true) {
+    } else if (req.session.Admin == false) {    
         res.render("topics.hbs", {
             title: "Topic Page",
             style: "styles",
