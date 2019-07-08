@@ -415,7 +415,7 @@ app.get('/addtopic', (req, res) => {
         unique: true
     }, function (err, result) {
         db.collection('Topics').insertOne({
-            name: req.query.name
+            name: req.query.name.toLowerCase()
         }, (err, result) => {
             if (!result) {
                 res.end()
