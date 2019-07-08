@@ -1,11 +1,12 @@
- <div>
+<body onbeforeunload="unload()">
+    <div>
         <form action="/" method="GET">
             <button class="signup">Login</button>
         </form>
     </div>
-
+    <br>
     <div class="container">
-
+        <img src="logo.png" alt="Message Board" style="max-width: 80%;max-height: 100px"><br><i>Explore !</i><br><br>
         <form action="/register" method="POST">
             <input type="email" name="email" placeholder="Email" required><br>
             <input type="text" name="username" placeholder="Username" required><br>
@@ -14,5 +15,10 @@
             <button type="submit">Register</button>
 
         </form>
-
+        <br><img src="team.png" alt="Message Board" style="max-width: 40vh;max-height: 50px">
     </div>
+    <script>
+        document.getElementById('loading').style.display = 'none'
+        function unload() { document.getElementById('loading').style.display = 'block' }
+    </script>
+</body>
