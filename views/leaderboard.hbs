@@ -36,7 +36,7 @@
                 case '#topposts':
                     fetch('/topposts' + window.location.search)
                         .then(res => res.json())
-                        .then(result => renderUI(result))
+                        .then(result => renderUIposts(result))
                         .catch(err => console.log(err))
                     break;
 
@@ -63,10 +63,34 @@
                     let li = document.createElement('li')
                     let a = document.createElement('a')
                     let b = document.createElement('b')
-                    a.textContent = post.content
+                    let img = document.createElement("img")
+                    a.textContent = post.content + " "
                     a.setAttribute('onclick', 'postClick("' + post._id + '")')
-                    b.textContent = post.username + ' '
+                    b.textContent = post.username + " "
+                    img.src = "/images/message.png"
+                    img.height = "15"
                     a.prepend(b)
+                    a.appendChild(img)
+                    li.appendChild(a)
+                    document.querySelector('.posts-container ul').prepend(li)
+                }
+                document.getElementById('loading').style.display = 'none'
+            }
+            function renderUIposts(result) {
+                document.querySelector('.topic-heading').innerHTML = '#'+result.name
+                document.querySelector('.posts-container ul').innerHTML = ''
+                for (post of result.posts) {
+                    let li = document.createElement('li')
+                    let a = document.createElement('a')
+                    let b = document.createElement('b')
+                    let img = document.createElement("img")
+                    a.textContent = post.content + " "
+                    a.setAttribute('onclick', 'postClick("' + post._id + '")')
+                    b.textContent = post.username + ' ★ ' + post.likes + " "
+                    img.src = "/images/message.png"
+                    img.height = "15"
+                    a.prepend(b)
+                    a.appendChild(img)
                     li.appendChild(a)
                     document.querySelector('.posts-container ul').prepend(li)
                 }

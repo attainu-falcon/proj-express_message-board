@@ -311,7 +311,8 @@ app.get('/topposts', function (req, res) {
                     $push: {
                         _id: '$posts._id',
                         username: '$posts.username',
-                        content: '$posts.content'
+                        content: '$posts.content',
+                        likes: '$likes'
                     }
                 }
             }
