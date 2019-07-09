@@ -9,13 +9,9 @@
                  </form>
 
                 <ul>
-                    <li><a class="sort" href="#latestposts">Latest</a></li>
-                    <!--
-         -->
-                    <li><a class="sort" href="#topusers">Top Users</a></li>
-                    <!--
-         -->
-                    <li><a class="sort" href="#topposts">Top Posts</a></li>
+                    <li><a class="sort" href="#latestposts">Latest</a></li><!--
+                 --><li><a class="sort" href="#topusers">Top Users</a></li><!--
+                 --><li><a class="sort" href="#topposts">Top Posts</a></li>
                     </ul>
                     <div class="toolbar">
                         <h2 class="topic-heading"></h2>
@@ -86,6 +82,7 @@
                     li.appendChild(b)
                     document.querySelector('.posts-container ul').appendChild(li)
                 }
+                document.getElementById('loading').style.display = 'none'
             }
         }
 

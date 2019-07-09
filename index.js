@@ -335,7 +335,10 @@ app.get('/commentlist', function (req, res) {
             }
         },
         function (err, result) {
+            if(result)
             res.send(result.posts[0].comments)
+            else
+            res.end()
         })
 })
 
