@@ -78,7 +78,7 @@
                 for (post of result) {
                     let li = document.createElement('li')
                     let b = document.createElement('b')
-                    b.textContent = post._id
+                    b.textContent = post._id + " ★ " + post.userLikes
                     li.appendChild(b)
                     document.querySelector('.posts-container ul').appendChild(li)
                 }
