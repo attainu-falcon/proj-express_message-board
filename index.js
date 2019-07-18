@@ -394,13 +394,13 @@ app.get('/updatelikes', function (req, res) {
     )
 })
 
-// app.get('/deletetopic', function (req, res) {
-//     db.collection('Topics').deleteOne({
-//         "_id": ObjectID(req.query.topicid)
-//     }, function (err, result) {
-//         res.send(result.result.n.toString())
-//     })
-// })
+app.get('/deletetopic', function (req, res) {
+    db.collection('Topics').deleteOne({
+        "_id": ObjectID(req.query.topicid)
+    }, function (err, result) {
+        res.send(result.result.n.toString())
+    })
+})
 
 app.get('/listtopics', (req, res) => {
     db.collection('Topics').find({}, {
