@@ -125,7 +125,7 @@ app.get('/logout', function (req, res) {
 
 app.post('/authPass', (req, res) => {
     db.collection('Users').findOne({
-        'username': req.body.username
+        'email': req.body.email
     }, function (err, result) {
         if (err) throw err;
 
