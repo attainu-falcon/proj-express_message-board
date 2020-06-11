@@ -7,8 +7,8 @@ var hbs = require("express-handlebars");
 app.use(express.static('public'))
 app.use(express.urlencoded())
 var url,db;
-if(process.env.MY_DB)
- url=process.env.MY_DB;
+if(process.env.DB_URL)
+ url=process.env.DB_URL;
  else
  url='mongodb://127.0.0.1:27017';
 
