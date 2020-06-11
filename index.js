@@ -6,17 +6,17 @@ const ObjectID = require('mongodb').ObjectID
 var hbs = require("express-handlebars");
 app.use(express.static('public'))
 app.use(express.urlencoded())
-var url
-if (process.env.DB_URL) {
-    url = process.env.DB_URL
-} else {
-    url = 'mongodb://127.0.0.1:27017'
-}
-var db;
-mongoClient.connect(url, function (err, client) {
-    if (err) throw err
-    db = client.db("MessageBoard")
-})
+var url,db;
+if(process.env.MY_DB)
+ url=process.env.MY_DB;
+ else
+ url='mongodb://127.0.0.1:27017';
+
+mongoClient.connect(url, { useNewUrlParser: true ,useUnifiedTopology: true  },function(err,client){
+    if(err) throw err;
+   db=client.db('MessageBoard');
+});
+
 app.use(express.json())
 app.use(express.text())
 app.use(session({
